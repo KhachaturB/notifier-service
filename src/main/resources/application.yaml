@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: notifier-service
+
+  jpa:
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog.yaml
+    default-schema: notifier_service
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=notifier_service
+    username: secret
+    password: secret
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20

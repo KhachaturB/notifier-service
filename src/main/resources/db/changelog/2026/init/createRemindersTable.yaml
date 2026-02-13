@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTable-reminders
+      author: Khachatur
+      changes:
+        - createTable:
+            tableName: reminders
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: reminders_id
+              - column:
+                  name: schedule
+                  type: text
+              - column:
+                  name: userId
+                  type: UUID
+              - column:
+                  name: text
+                  type: text

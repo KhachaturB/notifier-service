@@ -1,0 +1,136 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jooq.codegen.GenerationTool
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.Target
+import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+
+plugins {
+    id("org.springframework.boot") version "3.5.10"
+    id("io.spring.dependency-management") version "1.1.4"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.spring") version "1.9.23"
+    id("org.jooq.jooq-codegen-gradle") version "3.20.11"
+    id("com.diffplug.spotless") version "8.2.1"
+}
+
+group = "ru.vachoo"
+version = "0.0.1-SNAPSHOT"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencyManagement {
+    applyMavenExclusions(false)
+    imports {
+        mavenBom(BOM_COORDINATES)
+    }
+}
+
+val coroutines: String by project
+val swagger: String by project
+val modelMapper: String by project
+val liquibase: String by project
+val postgres: String by project
+val jooq: String by project
+
+buildscript {
+    val postgres: String by project
+
+    dependencies {
+        classpath("org.postgresql:postgresql:$postgres")
+    }
+}
+
+dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$swagger")
+
+    // Database
+    implementation("org.liquibase:liquibase-core:$liquibase")
+    implementation("org.postgresql:postgresql:$postgres")
+    implementation("org.jooq:jooq:$jooq")
+//    implementation("org.jooq:jooq-jackson-extensions:$jooq")
+
+    // Utils
+    implementation("org.modelmapper:modelmapper:$modelMapper")
+
+    // Tests
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs += "-Xjsr305=strict"
+        jvmTarget = "21"
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+spotless {
+    kotlin {
+        ktfmt("0.51").googleStyle()
+        targetExclude("**/generated/**/*.*")
+    }
+}
+
+tasks.register("jooq-codegen") {
+    enabled = true
+
+    doLast {
+        val configuration = org.jooq.meta.jaxb.Configuration()
+            .withLogging(org.jooq.meta.jaxb.Logging.INFO)
+            .withJdbc(
+                Jdbc()
+                .withDriver("org.postgresql.Driver")
+                .withUrl("jdbc:postgresql://localhost:5432/postgres")
+                .withUser("secret")
+                .withPassword("secret")
+            )
+            .withGenerator(
+                Generator()
+                    .withName("org.jooq.codegen.KotlinGenerator")
+                    .withDatabase(
+                        Database()
+                            .withName("org.jooq.meta.postgres.PostgresDatabase")
+                            .withInputSchema("notifier_service")
+                            .withExcludes("databasechangelog|databasechangeloglock")
+                            .withForcedTypes(
+                                ForcedType()
+                                    .withUserType("com.fasterxml.jackson.databind.JsonNode")
+                                    .withJsonConverter(true)
+                                    .withIncludeTypes("json")
+                            )
+                    )
+                    .withTarget(
+                        Target()
+                            .withPackageName("ru.vachoo.notifier.adapter.out.db.generated")
+                            .withDirectory("$projectDir/src/main/kotlin")
+                    )
+            )
+        GenerationTool.generate(configuration)
+    }
+}
