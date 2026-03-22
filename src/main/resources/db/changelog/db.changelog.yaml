@@ -3,3 +3,11 @@ databaseChangeLog:
       file: ./2026/init/createRemindersTable.yaml
       relativeToChangelogFile: true
       labels: "Init scripts"
+  - include:
+      file: ./features/001-users-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: ./features/002-notification-preferences-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"

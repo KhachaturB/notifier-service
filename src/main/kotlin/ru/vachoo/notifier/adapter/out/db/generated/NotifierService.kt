@@ -26,13 +26,25 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
     }
 
     /**
+     * The table <code>notifier_service.notification_preferences</code>.
+     */
+    val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES
+
+    /**
      * The table <code>notifier_service.reminders</code>.
      */
     val REMINDERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS
 
+    /**
+     * The table <code>notifier_service.users</code>.
+     */
+    val USERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS
+
     override fun getCatalog(): Catalog = ru.vachoo.notifier.adapter.`out`.db.generated.DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES,
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS,
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS
     )
 }

@@ -1,9 +1,7 @@
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.Database
-import org.jooq.meta.jaxb.ForcedType
-import org.jooq.meta.jaxb.Generator
-import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Target
 import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 
@@ -14,6 +12,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.23"
     id("org.jooq.jooq-codegen-gradle") version "3.20.11"
     id("com.diffplug.spotless") version "8.2.1"
+    id("jacoco")
 }
 
 group = "ru.vachoo"
@@ -77,6 +76,7 @@ dependencies {
 
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.3.1")
 }
 
 tasks.withType<KotlinCompile> {
@@ -90,6 +90,23 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    classDirectories.setFrom(
+        sourceSets.main.get().output.asFileTree.matching {
+            exclude("ru/vachoo/notifier/adapter/out/db/generated/**")
+        }
+    )
+}
+
 spotless {
     kotlin {
         ktfmt("0.51").googleStyle()
@@ -98,7 +115,7 @@ spotless {
 }
 
 tasks.register("jooq-codegen") {
-    enabled = true
+    enabled = false
 
     doLast {
         val configuration = org.jooq.meta.jaxb.Configuration()

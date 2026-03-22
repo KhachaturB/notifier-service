@@ -5,9 +5,11 @@
 package ru.vachoo.notifier.adapter.`out`.db.generated.keys
 
 
+import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
+import org.jooq.impl.QOM.ForeignKeyRule
 
 
 
@@ -15,4 +17,12 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
+val NOTIFICATION_PREFERENCES_PKEY: UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord> = Internal.createUniqueKey(ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES, DSL.name("notification_preferences_pkey"), arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES.ID), true)
 val REMINDERS_ID: UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.RemindersRecord> = Internal.createUniqueKey(ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS, DSL.name("reminders_id"), arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS.ID), true)
+val USERS_PKEY: UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord> = Internal.createUniqueKey(ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS, DSL.name("users_pkey"), arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS.ID), true)
+
+// -------------------------------------------------------------------------
+// FOREIGN KEY definitions
+// -------------------------------------------------------------------------
+
+val NOTIFICATION_PREFERENCES__NOTIFICATION_PREFERENCES_USER_ID_FKEY: ForeignKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord> = Internal.createForeignKey(ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES, DSL.name("notification_preferences_user_id_fkey"), arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES.USER_ID), ru.vachoo.notifier.adapter.`out`.db.generated.keys.USERS_PKEY, arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS.ID), true, ForeignKeyRule.NO_ACTION, ForeignKeyRule.NO_ACTION)

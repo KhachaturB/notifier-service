@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTable-notification-preferences
+      author: agent
+      changes:
+        - createTable:
+            tableName: notification_preferences
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: notification_preferences_id
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_notification_preferences_user
+                    references: users(id)
+              - column:
+                  name: start_day_time
+                  type: TIME
+              - column:
+                  name: end_day_time
+                  type: TIME
+              - column:
+                  name: notifications_per_day
+                  type: INT
