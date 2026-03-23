@@ -1,25 +1,23 @@
 package ru.vachoo.notifier.application.services
 
 import java.util.UUID
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import ru.vachoo.notifier.application.commonports.out.UserDbPort
 import ru.vachoo.notifier.domain.entities.User
-
-import org.assertj.core.api.Assertions.assertThat
 
 @ExtendWith(MockitoExtension::class)
 class TokenValidationServiceTest {
 
-  @Mock
-  private lateinit var userDbPort: UserDbPort
+  @Mock private lateinit var userDbPort: UserDbPort
 
   private lateinit var service: TokenValidationService
 
@@ -38,12 +36,13 @@ class TokenValidationServiceTest {
     val result = service.validateOrCreateUser(userId, userToken)
 
     assertThat(result).isTrue()
-    verify(userDbPort).saveUser(
-      org.mockito.kotlin.check<User> { user ->
-        assertThat(user.id).isEqualTo(userId)
-        assertThat(user.userToken).isEqualTo(userToken)
-      }
-    )
+    verify(userDbPort)
+      .saveUser(
+        org.mockito.kotlin.check<User> { user ->
+          assertThat(user.id).isEqualTo(userId)
+          assertThat(user.userToken).isEqualTo(userToken)
+        }
+      )
   }
 
   @Test

@@ -17,9 +17,9 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: created_at
-                  type: TIMESTAMP
+                  type: TIMESTAMPTZ
                   defaultValueComputed: CURRENT_TIMESTAMP
               - column:
                   name: updated_at
-                  type: TIMESTAMP
+                  type: TIMESTAMPTZ
                   defaultValueComputed: CURRENT_TIMESTAMP

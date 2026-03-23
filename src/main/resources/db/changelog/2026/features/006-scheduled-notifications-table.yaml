@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTable-scheduled-notifications
+      author: agent
+      changes:
+        - createTable:
+            tableName: scheduled_notifications
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: scheduled_notifications_id
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_scheduled_notifications_user
+                    references: users(id)
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+              - column:
+                  name: message
+                  type: TEXT
+              - column:
+                  name: scheduled_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: retry_count
+                  type: INT
+                  defaultValueNumeric: 0
+              - column:
+                  name: next_retry_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: sent_at
+                  type: TIMESTAMPTZ
+        - createIndex:
+            tableName: scheduled_notifications
+            indexName: idx_scheduled_notifications_status_scheduled
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: scheduled_at
+        - createIndex:
+            tableName: scheduled_notifications
+            indexName: idx_scheduled_notifications_next_retry
+            columns:
+              - column:
+                  name: next_retry_at

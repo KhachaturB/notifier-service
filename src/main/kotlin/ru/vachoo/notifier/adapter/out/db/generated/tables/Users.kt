@@ -4,7 +4,7 @@
 package ru.vachoo.notifier.adapter.`out`.db.generated.tables
 
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -82,12 +82,12 @@ open class Users(
     /**
      * The column <code>notifier_service.users.created_at</code>.
      */
-    val CREATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, LocalDateTime?> = createField(DSL.name("created_at"), SQLDataType.LOCALDATETIME(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.LOCALDATETIME)), this, "")
+    val CREATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     /**
      * The column <code>notifier_service.users.updated_at</code>.
      */
-    val UPDATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, LocalDateTime?> = createField(DSL.name("updated_at"), SQLDataType.LOCALDATETIME(6).defaultValue(DSL.field(DSL.raw("CURRENT_TIMESTAMP"), SQLDataType.LOCALDATETIME)), this, "")
+    val UPDATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -121,7 +121,39 @@ open class Users(
         override fun `as`(alias: Table<*>): UsersPath = UsersPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else ru.vachoo.notifier.adapter.`out`.db.generated.NotifierService.NOTIFIER_SERVICE
-    override fun getPrimaryKey(): UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord> = ru.vachoo.notifier.adapter.`out`.db.generated.keys.USERS_PKEY
+    override fun getPrimaryKey(): UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord> = ru.vachoo.notifier.adapter.`out`.db.generated.keys.USERS_ID
+
+    private lateinit var _achievementDays: ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.AchievementDaysPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>notifier_service.achievement_days</code> table
+     */
+    fun achievementDays(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.AchievementDaysPath {
+        if (!this::_achievementDays.isInitialized)
+            _achievementDays = ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.AchievementDaysPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.ACHIEVEMENT_DAYS__FK_ACHIEVEMENT_DAYS_USER.inverseKey)
+
+        return _achievementDays;
+    }
+
+    val achievementDays: ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.AchievementDaysPath
+        get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.AchievementDaysPath = achievementDays()
+
+    private lateinit var _goals: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GoalsPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>notifier_service.goals</code> table
+     */
+    fun goals(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GoalsPath {
+        if (!this::_goals.isInitialized)
+            _goals = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GoalsPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.GOALS__FK_GOALS_USER.inverseKey)
+
+        return _goals;
+    }
+
+    val goals: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GoalsPath
+        get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GoalsPath = goals()
 
     private lateinit var _notificationPreferences: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath
 
@@ -131,13 +163,29 @@ open class Users(
      */
     fun notificationPreferences(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath {
         if (!this::_notificationPreferences.isInitialized)
-            _notificationPreferences = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__NOTIFICATION_PREFERENCES_USER_ID_FKEY.inverseKey)
+            _notificationPreferences = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__FK_NOTIFICATION_PREFERENCES_USER.inverseKey)
 
         return _notificationPreferences;
     }
 
     val notificationPreferences: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath
         get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath = notificationPreferences()
+
+    private lateinit var _scheduledNotifications: ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>notifier_service.scheduled_notifications</code> table
+     */
+    fun scheduledNotifications(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath {
+        if (!this::_scheduledNotifications.isInitialized)
+            _scheduledNotifications = ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.SCHEDULED_NOTIFICATIONS__FK_SCHEDULED_NOTIFICATIONS_USER.inverseKey)
+
+        return _scheduledNotifications;
+    }
+
+    val scheduledNotifications: ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath
+        get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath = scheduledNotifications()
     override fun `as`(alias: String): Users = Users(DSL.name(alias), this)
     override fun `as`(alias: Name): Users = Users(alias, this)
     override fun `as`(alias: Table<*>): Users = Users(alias.qualifiedName, this)

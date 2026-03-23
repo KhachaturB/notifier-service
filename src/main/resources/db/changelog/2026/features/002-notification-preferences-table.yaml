@@ -21,9 +21,15 @@ databaseChangeLog:
               - column:
                   name: start_day_time
                   type: TIME
+                  constraints:
+                    nullable: false
               - column:
                   name: end_day_time
                   type: TIME
+                  constraints:
+                    nullable: false
               - column:
                   name: notifications_per_day
                   type: INT
+                  constraints:
+                    nullable: false

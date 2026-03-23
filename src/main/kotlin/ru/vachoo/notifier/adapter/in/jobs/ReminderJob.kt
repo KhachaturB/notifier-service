@@ -1,4 +1,4 @@
-package ru.vachoo.notifier.adapter.`in`.job
+package ru.vachoo.notifier.adapter.`in`.jobs
 
 import java.util.logging.Logger
 import org.quartz.Job

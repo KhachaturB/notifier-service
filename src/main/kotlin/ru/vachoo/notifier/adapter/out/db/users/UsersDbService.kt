@@ -1,6 +1,7 @@
 package ru.vachoo.notifier.adapter.out.db.users
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
@@ -18,10 +19,11 @@ class UsersDbService(val dslContext: DSLContext) : UserDbPort {
     dslContext
       .insertInto(USERS)
       .columns(USERS.ID, USERS.USER_TOKEN, USERS.CREATED_AT)
-      .values(user.id, user.userToken, LocalDateTime.now())
-      .onDuplicateKeyUpdate()
+      .values(user.id, user.userToken, OffsetDateTime.now(ZoneOffset.UTC))
+      .onConflict(USERS.ID)
+      .doUpdate()
       .set(USERS.USER_TOKEN, user.userToken)
-      .set(USERS.UPDATED_AT, LocalDateTime.now())
+      .set(USERS.UPDATED_AT, OffsetDateTime.now(ZoneOffset.UTC))
       .execute()
   }
 

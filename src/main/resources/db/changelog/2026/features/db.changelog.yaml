@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - include:
+      file: 001-users-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 002-notification-preferences-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 003-goals-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 004-achievement-days-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 005-add-goals-is-deleted.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 006-scheduled-notifications-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"

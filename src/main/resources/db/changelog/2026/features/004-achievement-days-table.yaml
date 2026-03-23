@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTable-achievement-days
+      author: agent
+      changes:
+        - createTable:
+            tableName: achievement_days
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: achievement_days_id
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_achievement_days_user
+                    references: users(id)
+              - column:
+                  name: date
+                  type: TIMESTAMPTZ

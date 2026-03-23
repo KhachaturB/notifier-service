@@ -26,6 +26,16 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
     }
 
     /**
+     * The table <code>notifier_service.achievement_days</code>.
+     */
+    val ACHIEVEMENT_DAYS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.ACHIEVEMENT_DAYS
+
+    /**
+     * The table <code>notifier_service.goals</code>.
+     */
+    val GOALS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GOALS
+
+    /**
      * The table <code>notifier_service.notification_preferences</code>.
      */
     val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES
@@ -36,6 +46,11 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
     val REMINDERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS
 
     /**
+     * The table <code>notifier_service.scheduled_notifications</code>.
+     */
+    val SCHEDULED_NOTIFICATIONS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS
+
+    /**
      * The table <code>notifier_service.users</code>.
      */
     val USERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS
@@ -43,8 +58,11 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
     override fun getCatalog(): Catalog = ru.vachoo.notifier.adapter.`out`.db.generated.DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.ACHIEVEMENT_DAYS,
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GOALS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS,
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS
     )
 }

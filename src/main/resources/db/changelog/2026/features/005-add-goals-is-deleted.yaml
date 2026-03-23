@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-goals-is-deleted
+      author: agent
+      changes:
+        - addColumn:
+            tableName: goals
+            columns:
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false

@@ -86,19 +86,19 @@ open class NotificationPreferences(
      * The column
      * <code>notifier_service.notification_preferences.start_day_time</code>.
      */
-    val START_DAY_TIME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, LocalTime?> = createField(DSL.name("start_day_time"), SQLDataType.LOCALTIME(6), this, "")
+    val START_DAY_TIME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, LocalTime?> = createField(DSL.name("start_day_time"), SQLDataType.LOCALTIME(6).nullable(false), this, "")
 
     /**
      * The column
      * <code>notifier_service.notification_preferences.end_day_time</code>.
      */
-    val END_DAY_TIME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, LocalTime?> = createField(DSL.name("end_day_time"), SQLDataType.LOCALTIME(6), this, "")
+    val END_DAY_TIME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, LocalTime?> = createField(DSL.name("end_day_time"), SQLDataType.LOCALTIME(6).nullable(false), this, "")
 
     /**
      * The column
      * <code>notifier_service.notification_preferences.notifications_per_day</code>.
      */
-    val NOTIFICATIONS_PER_DAY: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, Int?> = createField(DSL.name("notifications_per_day"), SQLDataType.INTEGER, this, "")
+    val NOTIFICATIONS_PER_DAY: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, Int?> = createField(DSL.name("notifications_per_day"), SQLDataType.INTEGER.nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -135,15 +135,15 @@ open class NotificationPreferences(
         override fun `as`(alias: Table<*>): NotificationPreferencesPath = NotificationPreferencesPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else ru.vachoo.notifier.adapter.`out`.db.generated.NotifierService.NOTIFIER_SERVICE
-    override fun getPrimaryKey(): UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord> = ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES_PKEY
-    override fun getReferences(): List<ForeignKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, *>> = listOf(ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__NOTIFICATION_PREFERENCES_USER_ID_FKEY)
+    override fun getPrimaryKey(): UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord> = ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES_ID
+    override fun getReferences(): List<ForeignKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, *>> = listOf(ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__FK_NOTIFICATION_PREFERENCES_USER)
 
     /**
      * Get the implicit join path to the <code>notifier_service.users</code>
      * table.
      */
     fun users(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.UsersPath = users
-    val users: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.UsersPath by lazy { ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.UsersPath(this, ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__NOTIFICATION_PREFERENCES_USER_ID_FKEY, null) }
+    val users: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.UsersPath by lazy { ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.UsersPath(this, ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__FK_NOTIFICATION_PREFERENCES_USER, null) }
     override fun `as`(alias: String): NotificationPreferences = NotificationPreferences(DSL.name(alias), this)
     override fun `as`(alias: Name): NotificationPreferences = NotificationPreferences(alias, this)
     override fun `as`(alias: Table<*>): NotificationPreferences = NotificationPreferences(alias.qualifiedName, this)

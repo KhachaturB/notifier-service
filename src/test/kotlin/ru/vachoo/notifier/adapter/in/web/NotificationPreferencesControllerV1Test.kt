@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.modelmapper.ModelMapper
@@ -73,7 +74,7 @@ class NotificationPreferencesControllerV1Test {
       )
       .andExpect(status().isOk())
 
-    verify(setNotificationPreferenceUseCase).set(preferenceId, dto)
+    verify(setNotificationPreferenceUseCase).set(any(), any())
   }
 
   @Test

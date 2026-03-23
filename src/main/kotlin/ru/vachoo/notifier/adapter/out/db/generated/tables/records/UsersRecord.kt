@@ -4,7 +4,7 @@
 package ru.vachoo.notifier.adapter.`out`.db.generated.tables.records
 
 
-import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -25,13 +25,13 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(ru.vachoo.notifier.a
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var createdAt: LocalDateTime?
+    open var createdAt: OffsetDateTime?
         set(value): Unit = set(2, value)
-        get(): LocalDateTime? = get(2) as LocalDateTime?
+        get(): OffsetDateTime? = get(2) as OffsetDateTime?
 
-    open var updatedAt: LocalDateTime?
+    open var updatedAt: OffsetDateTime?
         set(value): Unit = set(3, value)
-        get(): LocalDateTime? = get(3) as LocalDateTime?
+        get(): OffsetDateTime? = get(3) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -42,7 +42,7 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(ru.vachoo.notifier.a
     /**
      * Create a detached, initialised UsersRecord
      */
-    constructor(id: UUID? = null, userToken: String? = null, createdAt: LocalDateTime? = null, updatedAt: LocalDateTime? = null): this() {
+    constructor(id: UUID? = null, userToken: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.id = id
         this.userToken = userToken
         this.createdAt = createdAt

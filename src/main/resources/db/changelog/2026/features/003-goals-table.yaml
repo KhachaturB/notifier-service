@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: createTable-goals
+      author: agent
+      changes:
+        - createTable:
+            tableName: goals
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: goals_id
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    foreignKeyName: fk_goals_user
+                    references: users(id)
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  name: category
+                  type: VARCHAR(50)
+              - column:
+                  name: icon
+                  type: VARCHAR(100)
+              - column:
+                  name: color
+                  type: VARCHAR(7)
+              - column:
+                  name: current_value
+                  type: DOUBLE
+              - column:
+                  name: target_value
+                  type: DOUBLE
+              - column:
+                  name: unit
+                  type: VARCHAR(50)

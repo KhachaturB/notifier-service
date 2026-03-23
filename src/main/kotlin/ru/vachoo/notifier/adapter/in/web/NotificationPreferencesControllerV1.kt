@@ -15,6 +15,7 @@ import ru.vachoo.notifier.adapter.`in`.web.dtos.NotificationPreferenceDto
 import ru.vachoo.notifier.application.exceptions.UnauthorizedException
 import ru.vachoo.notifier.application.usecases.getnotificationpreferences.`in`.GetNotificationPreferencesUseCase
 import ru.vachoo.notifier.application.usecases.setnotificationpreference.`in`.SetNotificationPreferenceUseCase
+import ru.vachoo.notifier.domain.entities.NotificationPreference
 
 @RestController
 @RequestMapping("api/v1/notification-preferences")
@@ -30,7 +31,8 @@ class NotificationPreferencesControllerV1(
     @RequestBody dto: NotificationPreferenceDto,
   ) {
     try {
-      setNotificationPreferenceUseCase.set(preferenceId, dto)
+      val preference = modelMapper.map(dto, NotificationPreference::class.java)
+      setNotificationPreferenceUseCase.set(preferenceId, preference)
     } catch (e: UnauthorizedException) {
       throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
     }

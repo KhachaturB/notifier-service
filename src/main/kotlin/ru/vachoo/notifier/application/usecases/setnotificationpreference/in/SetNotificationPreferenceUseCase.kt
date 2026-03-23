@@ -1,8 +1,8 @@
 package ru.vachoo.notifier.application.usecases.setnotificationpreference.`in`
 
 import java.util.UUID
-import ru.vachoo.notifier.adapter.`in`.web.dtos.NotificationPreferenceDto
+import ru.vachoo.notifier.domain.entities.NotificationPreference
 
 interface SetNotificationPreferenceUseCase {
-  fun set(preferenceId: UUID, dto: NotificationPreferenceDto)
+  fun set(preferenceId: UUID, preference: NotificationPreference)
 }

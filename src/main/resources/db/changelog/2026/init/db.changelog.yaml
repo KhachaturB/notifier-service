@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: createRemindersTable.yaml
+      relativeToChangelogFile: true
+      labels: "Init scripts"

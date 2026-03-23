@@ -1,9 +1,9 @@
 package ru.vachoo.notifier.application.usecases.setnotificationpreference
 
 import java.util.UUID
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import ru.vachoo.notifier.adapter.`in`.web.dtos.NotificationPreferenceDto
 import ru.vachoo.notifier.application.exceptions.UnauthorizedException
 import ru.vachoo.notifier.application.services.TokenValidationService
 import ru.vachoo.notifier.application.usecases.setnotificationpreference.`in`.SetNotificationPreferenceUseCase
@@ -16,27 +16,24 @@ class SetNotificationPreferenceUseCaseImpl(
   val setNotificationPreferenceDbPort: SetNotificationPreferenceDbPort,
 ) : SetNotificationPreferenceUseCase {
 
+  private val log = LoggerFactory.getLogger(javaClass)
+
   @Transactional
-  override fun set(preferenceId: UUID, dto: NotificationPreferenceDto) {
-    val userId = dto.userId ?: throw IllegalArgumentException("userId is required")
-    val userToken = dto.userToken ?: throw IllegalArgumentException("userToken is required")
-    val startDayTime =
-      dto.startDayTime ?: throw IllegalArgumentException("startDayTime is required")
-    val endDayTime = dto.endDayTime ?: throw IllegalArgumentException("endDayTime is required")
-    val notificationsPerDay =
-      dto.notificationsPerDay ?: throw IllegalArgumentException("notificationsPerDay is required")
+  override fun set(preferenceId: UUID, preference: NotificationPreference) {
+    log.info(
+      "Setting notification preference: preferenceId={}, userId={}",
+      preferenceId,
+      preference.userId,
+    )
+    val userId = preference.userId ?: throw IllegalArgumentException("userId is required")
+    val userToken = preference.userToken ?: throw IllegalArgumentException("userToken is required")
 
     if (!tokenValidationService.validateOrCreateUser(userId, userToken)) {
+      log.warn("Invalid token for user: userId={}", userId)
       throw UnauthorizedException("Invalid user token")
     }
-    val preference =
-      NotificationPreference().apply {
-        this.id = preferenceId
-        this.userId = userId
-        this.startDayTime = startDayTime
-        this.endDayTime = endDayTime
-        this.notificationsPerDay = notificationsPerDay
-      }
+    preference.id = preferenceId
     setNotificationPreferenceDbPort.saveNotificationPreference(preference)
+    log.info("Notification preference saved: preferenceId={}, userId={}", preferenceId, userId)
   }
 }

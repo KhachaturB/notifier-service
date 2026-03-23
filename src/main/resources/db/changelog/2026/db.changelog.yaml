@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: init/db.changelog.yaml
+      relativeToChangelogFile: true
+      labels: "init changes"
+  - include:
+      file: features/db.changelog.yaml
+      relativeToChangelogFile: true
+      labels: "features changes"

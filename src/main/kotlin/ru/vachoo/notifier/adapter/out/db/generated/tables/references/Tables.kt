@@ -8,6 +8,16 @@ package ru.vachoo.notifier.adapter.`out`.db.generated.tables.references
 
 
 /**
+ * The table <code>notifier_service.achievement_days</code>.
+ */
+val ACHIEVEMENT_DAYS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays = ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.ACHIEVEMENT_DAYS
+
+/**
+ * The table <code>notifier_service.goals</code>.
+ */
+val GOALS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GOALS
+
+/**
  * The table <code>notifier_service.notification_preferences</code>.
  */
 val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES
@@ -16,6 +26,11 @@ val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tabl
  * The table <code>notifier_service.reminders</code>.
  */
 val REMINDERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS
+
+/**
+ * The table <code>notifier_service.scheduled_notifications</code>.
+ */
+val SCHEDULED_NOTIFICATIONS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications = ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS
 
 /**
  * The table <code>notifier_service.users</code>.

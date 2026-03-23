@@ -6,7 +6,7 @@ import org.quartz.JobDataMap
 import org.quartz.Scheduler
 import org.quartz.TriggerBuilder
 import org.springframework.stereotype.Component
-import ru.vachoo.notifier.adapter.`in`.job.ReminderJob
+import ru.vachoo.notifier.adapter.`in`.jobs.ReminderJob
 import ru.vachoo.notifier.application.usecases.setreminder.out.SchedulerPort
 import ru.vachoo.notifier.domain.entities.Reminder
 

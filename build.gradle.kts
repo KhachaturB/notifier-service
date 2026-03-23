@@ -115,8 +115,6 @@ spotless {
 }
 
 tasks.register("jooq-codegen") {
-    enabled = false
-
     doLast {
         val configuration = org.jooq.meta.jaxb.Configuration()
             .withLogging(org.jooq.meta.jaxb.Logging.INFO)
