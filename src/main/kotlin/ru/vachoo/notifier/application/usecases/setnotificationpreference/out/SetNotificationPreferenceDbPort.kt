@@ -7,4 +7,6 @@ interface SetNotificationPreferenceDbPort {
   fun saveNotificationPreference(preference: NotificationPreference)
 
   fun findById(preferenceId: UUID): NotificationPreference?
+
+  fun findByUserIdSingle(userId: UUID): NotificationPreference?
 }

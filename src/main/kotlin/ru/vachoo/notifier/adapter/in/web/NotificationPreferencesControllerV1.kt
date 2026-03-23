@@ -4,7 +4,6 @@ import java.util.UUID
 import org.modelmapper.ModelMapper
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,14 +24,11 @@ class NotificationPreferencesControllerV1(
   val getNotificationPreferencesUseCase: GetNotificationPreferencesUseCase,
 ) {
 
-  @PutMapping("/{preferenceId}")
-  fun setNotificationPreference(
-    @PathVariable preferenceId: UUID,
-    @RequestBody dto: NotificationPreferenceDto,
-  ) {
+  @PutMapping
+  fun setNotificationPreference(@RequestBody dto: NotificationPreferenceDto) {
     try {
       val preference = modelMapper.map(dto, NotificationPreference::class.java)
-      setNotificationPreferenceUseCase.set(preferenceId, preference)
+      setNotificationPreferenceUseCase.set(UUID.randomUUID(), preference)
     } catch (e: UnauthorizedException) {
       throw ResponseStatusException(HttpStatus.UNAUTHORIZED, e.message)
     }

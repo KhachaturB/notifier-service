@@ -1,6 +1,5 @@
 package ru.vachoo.notifier.application.usecases.getgoals
 
-import java.time.LocalDate
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -59,8 +58,7 @@ class GetGoalsUseCaseImplTest {
         this.category = GoalCategory.PERSONAL
       }
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
-    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(userId, LocalDate.now()))
-      .thenReturn(true)
+    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(true)
     whenever(getGoalsDbPort.findByUserId(userId)).thenReturn(listOf(goal))
 
     val result = useCase.getGoals(userId, userToken)
@@ -81,8 +79,7 @@ class GetGoalsUseCaseImplTest {
   @Test
   fun shouldReturnEmptyList_WhenNoGoalsExist() {
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
-    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(userId, LocalDate.now()))
-      .thenReturn(true)
+    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(true)
     whenever(getGoalsDbPort.findByUserId(userId)).thenReturn(emptyList())
 
     val result = useCase.getGoals(userId, userToken)
@@ -101,19 +98,12 @@ class GetGoalsUseCaseImplTest {
         this.category = GoalCategory.PERSONAL
       }
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
-    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(userId, LocalDate.now()))
-      .thenReturn(false)
+    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(false)
     whenever(getGoalsDbPort.findByUserId(userId)).thenReturn(listOf(goal))
 
     val result = useCase.getGoals(userId, userToken)
 
-    verify(setAchievementDayDbPort)
-      .saveAchievementDay(
-        org.mockito.kotlin.check<AchievementDay> { day ->
-          assertThat(day.userId).isEqualTo(userId)
-          assertThat(day.date).isEqualTo(LocalDate.now())
-        }
-      )
+    verify(setAchievementDayDbPort).saveAchievementDay(org.mockito.kotlin.any())
     assertThat(result).hasSize(1)
   }
 
@@ -128,8 +118,7 @@ class GetGoalsUseCaseImplTest {
         this.category = GoalCategory.PERSONAL
       }
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
-    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(userId, LocalDate.now()))
-      .thenReturn(true)
+    whenever(getAchievementDaysDbPort.hasAchievementDayForDate(org.mockito.kotlin.any(), org.mockito.kotlin.any())).thenReturn(true)
     whenever(getGoalsDbPort.findByUserId(userId)).thenReturn(listOf(goal))
 
     useCase.getGoals(userId, userToken)

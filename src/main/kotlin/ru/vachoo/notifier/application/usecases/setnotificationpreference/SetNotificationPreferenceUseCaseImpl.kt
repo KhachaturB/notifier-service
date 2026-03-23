@@ -20,11 +20,6 @@ class SetNotificationPreferenceUseCaseImpl(
 
   @Transactional
   override fun set(preferenceId: UUID, preference: NotificationPreference) {
-    log.info(
-      "Setting notification preference: preferenceId={}, userId={}",
-      preferenceId,
-      preference.userId,
-    )
     val userId = preference.userId ?: throw IllegalArgumentException("userId is required")
     val userToken = preference.userToken ?: throw IllegalArgumentException("userToken is required")
 
@@ -32,8 +27,9 @@ class SetNotificationPreferenceUseCaseImpl(
       log.warn("Invalid token for user: userId={}", userId)
       throw UnauthorizedException("Invalid user token")
     }
-    preference.id = preferenceId
+
+    log.info("Setting notification preference for userId={}", userId)
     setNotificationPreferenceDbPort.saveNotificationPreference(preference)
-    log.info("Notification preference saved: preferenceId={}, userId={}", preferenceId, userId)
+    log.info("Notification preference saved for userId={}, preferenceId={}", userId, preference.id)
   }
 }

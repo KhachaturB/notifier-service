@@ -1,6 +1,8 @@
 package ru.vachoo.notifier.application.usecases.getachievementdays
 
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -40,7 +42,7 @@ class GetAchievementDaysUseCaseImplTest {
       AchievementDay().apply {
         this.id = achievementDayId
         this.userId = userId
-        this.date = LocalDate.now()
+        this.date = LocalDate.now().atStartOfDay().atOffset(ZoneOffset.UTC)
       }
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
     whenever(getAchievementDaysDbPort.findByUserId(userId)).thenReturn(listOf(achievementDay))

@@ -15,35 +15,51 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
   SetNotificationPreferenceDbPort, GetNotificationPreferencesDbPort {
 
   override fun saveNotificationPreference(preference: NotificationPreference) {
-    dslContext
-      .insertInto(NOTIFICATION_PREFERENCES)
-      .columns(
-        NOTIFICATION_PREFERENCES.ID,
-        NOTIFICATION_PREFERENCES.USER_ID,
-        NOTIFICATION_PREFERENCES.START_DAY_TIME,
-        NOTIFICATION_PREFERENCES.END_DAY_TIME,
-        NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY,
-      )
-      .values(
-        preference.id,
-        preference.userId,
-        preference.startDayTime.toLocalTime(),
-        preference.endDayTime.toLocalTime(),
-        preference.notificationsPerDay,
-      )
-      .onConflict(NOTIFICATION_PREFERENCES.ID)
-      .doUpdate()
-      .set(NOTIFICATION_PREFERENCES.USER_ID, preference.userId)
-      .set(NOTIFICATION_PREFERENCES.START_DAY_TIME, preference.startDayTime.toLocalTime())
-      .set(NOTIFICATION_PREFERENCES.END_DAY_TIME, preference.endDayTime.toLocalTime())
-      .set(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY, preference.notificationsPerDay)
-      .execute()
+    val userId = preference.userId ?: return
+
+    val existingPref = findByUserIdSingle(userId)
+    if (existingPref != null) {
+      dslContext
+        .update(NOTIFICATION_PREFERENCES)
+        .set(NOTIFICATION_PREFERENCES.START_DAY_TIME, preference.startDayTime.toLocalTime())
+        .set(NOTIFICATION_PREFERENCES.END_DAY_TIME, preference.endDayTime.toLocalTime())
+        .set(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY, preference.notificationsPerDay)
+        .where(NOTIFICATION_PREFERENCES.USER_ID.eq(userId))
+        .execute()
+      preference.id = existingPref.id
+    } else {
+      preference.id = UUID.randomUUID()
+      dslContext
+        .insertInto(NOTIFICATION_PREFERENCES)
+        .columns(
+          NOTIFICATION_PREFERENCES.ID,
+          NOTIFICATION_PREFERENCES.USER_ID,
+          NOTIFICATION_PREFERENCES.START_DAY_TIME,
+          NOTIFICATION_PREFERENCES.END_DAY_TIME,
+          NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY,
+        )
+        .values(
+          preference.id,
+          preference.userId,
+          preference.startDayTime.toLocalTime(),
+          preference.endDayTime.toLocalTime(),
+          preference.notificationsPerDay,
+        )
+        .execute()
+    }
   }
 
   override fun findById(preferenceId: UUID): NotificationPreference? =
     dslContext
       .selectFrom(NOTIFICATION_PREFERENCES)
       .where(NOTIFICATION_PREFERENCES.ID.eq(preferenceId))
+      .fetchOne()
+      ?.into(NotificationPreference::class.java)
+
+  override fun findByUserIdSingle(userId: UUID): NotificationPreference? =
+    dslContext
+      .selectFrom(NOTIFICATION_PREFERENCES)
+      .where(NOTIFICATION_PREFERENCES.USER_ID.eq(userId))
       .fetchOne()
       ?.into(NotificationPreference::class.java)
 
@@ -56,8 +72,10 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
         NotificationPreference().apply {
           this.id = record.get(NOTIFICATION_PREFERENCES.ID)
           this.userId = record.get(NOTIFICATION_PREFERENCES.USER_ID)
-          this.startDayTime = OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.START_DAY_TIME), ZoneOffset.UTC)
-          this.endDayTime = OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME), ZoneOffset.UTC)
+          this.startDayTime =
+            OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.START_DAY_TIME), ZoneOffset.UTC)
+          this.endDayTime =
+            OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME), ZoneOffset.UTC)
           this.notificationsPerDay = record.get(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY) ?: 5
         }
       }
@@ -67,8 +85,10 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
       NotificationPreference().apply {
         this.id = record.get(NOTIFICATION_PREFERENCES.ID)
         this.userId = record.get(NOTIFICATION_PREFERENCES.USER_ID)
-        this.startDayTime = OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.START_DAY_TIME), ZoneOffset.UTC)
-        this.endDayTime = OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME), ZoneOffset.UTC)
+        this.startDayTime =
+          OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.START_DAY_TIME), ZoneOffset.UTC)
+        this.endDayTime =
+          OffsetTime.of(record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME), ZoneOffset.UTC)
         this.notificationsPerDay = record.get(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY) ?: 5
       }
     }

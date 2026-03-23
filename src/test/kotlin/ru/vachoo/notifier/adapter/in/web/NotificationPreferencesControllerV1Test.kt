@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.time.LocalTime
+import java.time.OffsetTime
+import java.time.ZoneOffset
 import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,6 +48,15 @@ class NotificationPreferencesControllerV1Test {
   @BeforeEach
   fun setUp() {
     val modelMapper = ModelMapper()
+    modelMapper.createTypeMap(OffsetTime::class.java, LocalTime::class.java).converter =
+      org.modelmapper.Converter { context: org.modelmapper.spi.MappingContext<OffsetTime, LocalTime> ->
+        context.source?.toLocalTime()
+      }
+    modelMapper.createTypeMap(LocalTime::class.java, OffsetTime::class.java).converter =
+      org.modelmapper.Converter { context: org.modelmapper.spi.MappingContext<LocalTime, OffsetTime> ->
+        OffsetTime.of(context.source, ZoneOffset.UTC)
+      }
+    
     val controller =
       NotificationPreferencesControllerV1(
         modelMapper,
@@ -68,7 +79,7 @@ class NotificationPreferencesControllerV1Test {
 
     mockMvc
       .perform(
-        put("/api/v1/notification-preferences/{preferenceId}", preferenceId)
+        put("/api/v1/notification-preferences")
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(dto))
       )
@@ -83,8 +94,8 @@ class NotificationPreferencesControllerV1Test {
       NotificationPreference().apply {
         this.id = preferenceId
         this.userId = userId
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
+        this.startDayTime = OffsetTime.of(9, 0, 0, 0, ZoneOffset.UTC)
+        this.endDayTime = OffsetTime.of(21, 0, 0, 0, ZoneOffset.UTC)
         this.notificationsPerDay = 5
       }
     whenever(getNotificationPreferencesUseCase.getPreferences(userId, userToken))
@@ -98,8 +109,8 @@ class NotificationPreferencesControllerV1Test {
       )
       .andExpect(status().isOk())
       .andExpect(jsonPath("$[0].id").value(preferenceId.toString()))
-      .andExpect(jsonPath("$[0].startDayTime").value("09:00"))
-      .andExpect(jsonPath("$[0].endDayTime").value("21:00"))
+      .andExpect(jsonPath("$[0].startDayTime").value("09:00:00"))
+      .andExpect(jsonPath("$[0].endDayTime").value("21:00:00"))
       .andExpect(jsonPath("$[0].notificationsPerDay").value(5))
   }
 
