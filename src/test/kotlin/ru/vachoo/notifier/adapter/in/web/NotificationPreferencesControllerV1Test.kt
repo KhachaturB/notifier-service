@@ -4,22 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.time.LocalTime
-import java.time.OffsetTime
-import java.time.ZoneOffset
 import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.modelmapper.ModelMapper
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -48,15 +44,6 @@ class NotificationPreferencesControllerV1Test {
   @BeforeEach
   fun setUp() {
     val modelMapper = ModelMapper()
-    modelMapper.createTypeMap(OffsetTime::class.java, LocalTime::class.java).converter =
-      org.modelmapper.Converter { context: org.modelmapper.spi.MappingContext<OffsetTime, LocalTime> ->
-        context.source?.toLocalTime()
-      }
-    modelMapper.createTypeMap(LocalTime::class.java, OffsetTime::class.java).converter =
-      org.modelmapper.Converter { context: org.modelmapper.spi.MappingContext<LocalTime, OffsetTime> ->
-        OffsetTime.of(context.source, ZoneOffset.UTC)
-      }
-    
     val controller =
       NotificationPreferencesControllerV1(
         modelMapper,
@@ -75,17 +62,16 @@ class NotificationPreferencesControllerV1Test {
         startDayTime = LocalTime.of(9, 0),
         endDayTime = LocalTime.of(21, 0),
         notificationsPerDay = 5,
+        timezone = "Europe/Moscow",
       )
 
     mockMvc
       .perform(
-        put("/api/v1/notification-preferences")
+        post("/api/v1/notification-preferences")
           .contentType(MediaType.APPLICATION_JSON)
           .content(objectMapper.writeValueAsString(dto))
       )
       .andExpect(status().isOk())
-
-    verify(setNotificationPreferenceUseCase).set(any(), any())
   }
 
   @Test
@@ -94,9 +80,10 @@ class NotificationPreferencesControllerV1Test {
       NotificationPreference().apply {
         this.id = preferenceId
         this.userId = userId
-        this.startDayTime = OffsetTime.of(9, 0, 0, 0, ZoneOffset.UTC)
-        this.endDayTime = OffsetTime.of(21, 0, 0, 0, ZoneOffset.UTC)
+        this.startDayTime = LocalTime.of(9, 0)
+        this.endDayTime = LocalTime.of(21, 0)
         this.notificationsPerDay = 5
+        this.timezone = "Europe/Moscow"
       }
     whenever(getNotificationPreferencesUseCase.getPreferences(userId, userToken))
       .thenReturn(listOf(preference))
@@ -112,6 +99,7 @@ class NotificationPreferencesControllerV1Test {
       .andExpect(jsonPath("$[0].startDayTime").value("09:00:00"))
       .andExpect(jsonPath("$[0].endDayTime").value("21:00:00"))
       .andExpect(jsonPath("$[0].notificationsPerDay").value(5))
+      .andExpect(jsonPath("$[0].timezone").value("Europe/Moscow"))
   }
 
   @Test

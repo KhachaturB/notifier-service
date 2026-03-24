@@ -1,7 +1,6 @@
 package ru.vachoo.notifier.application.usecases.getachievementdays
 
 import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat

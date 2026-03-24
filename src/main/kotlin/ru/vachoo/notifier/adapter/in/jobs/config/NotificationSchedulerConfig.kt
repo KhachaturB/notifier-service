@@ -38,7 +38,7 @@ class NotificationSchedulerConfig(
     val trigger =
       TriggerBuilder.newTrigger()
         .withIdentity("create-scheduled-notifications-trigger")
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 */5 * * * ?"))
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 */1 * * * ?"))
         .build()
 
     scheduler.scheduleJob(job, trigger)
@@ -55,7 +55,7 @@ class NotificationSchedulerConfig(
     val trigger =
       TriggerBuilder.newTrigger()
         .withIdentity("process-scheduled-notifications-trigger")
-        .withSchedule(CronScheduleBuilder.cronSchedule("0 */5 * * * ?"))
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 */1 * * * ?"))
         .build()
 
     scheduler.scheduleJob(job, trigger)

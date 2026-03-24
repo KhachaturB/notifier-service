@@ -1,7 +1,6 @@
 package ru.vachoo.notifier.application.usecases.setnotificationpreference
 
-import java.time.OffsetTime
-import java.time.ZoneOffset
+import java.time.LocalTime
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -39,9 +38,10 @@ class SetNotificationPreferenceUseCaseImplTest {
     val preference = NotificationPreference()
     preference.userId = userId
     preference.userToken = userToken
-    preference.startDayTime = OffsetTime.of(9, 0, 0, 0, ZoneOffset.UTC)
-    preference.endDayTime = OffsetTime.of(21, 0, 0, 0, ZoneOffset.UTC)
+    preference.startDayTime = LocalTime.of(9, 0)
+    preference.endDayTime = LocalTime.of(21, 0)
     preference.notificationsPerDay = 5
+    preference.timezone = "Europe/Moscow"
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
 
     useCase.set(preferenceId, preference)

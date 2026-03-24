@@ -12,7 +12,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=notifier_service
+    url: jdbc:postgresql://localhost:5432/postgres?currentSchema=notifier_service&options=-c%20timezone=UTC
     username: secret
     password: secret
     hikari:

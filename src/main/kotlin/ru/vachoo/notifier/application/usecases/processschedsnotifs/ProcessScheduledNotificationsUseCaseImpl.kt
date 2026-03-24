@@ -2,6 +2,7 @@ package ru.vachoo.notifier.application.usecases.processschedsnotifs
 
 import java.time.Duration
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -34,7 +35,6 @@ class ProcessScheduledNotificationsUseCaseImpl(
   @Transactional
   override fun process() {
     log.info("Processing scheduled notifications")
-    // NOTE: All times are stored in UTC for consistency
     val notifications = scheduledNotificationDbPort.findPendingForProcessing(100)
     log.info("Found {} notifications to process", notifications.size)
 
@@ -57,7 +57,7 @@ class ProcessScheduledNotificationsUseCaseImpl(
         false
       }
 
-    val now = OffsetDateTime.now(java.time.ZoneOffset.UTC)
+    val now = OffsetDateTime.now(ZoneOffset.UTC)
 
     if (success) {
       notification.status = NotificationStatus.SENT
@@ -78,7 +78,7 @@ class ProcessScheduledNotificationsUseCaseImpl(
         )
       } else {
         val delay = RETRY_DELAYS.getOrElse(notification.retryCount - 1) { Duration.ofMinutes(8) }
-        notification.nextRetryAt = now.plus(delay)
+        notification.nextRetryAt = now.plusMinutes(delay.toMinutes())
         log.warn(
           "Notification failed, retry {} in {} minutes id={}",
           notification.retryCount,

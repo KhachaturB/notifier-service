@@ -1,7 +1,6 @@
 package ru.vachoo.notifier.application.usecases.getnotificationpreferences
 
-import java.time.OffsetTime
-import java.time.ZoneOffset
+import java.time.LocalTime
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -45,9 +44,10 @@ class GetNotificationPreferencesUseCaseImplTest {
       NotificationPreference().apply {
         this.id = preferenceId
         this.userId = userId
-        this.startDayTime = OffsetTime.of(9, 0, 0, 0, ZoneOffset.UTC)
-        this.endDayTime = OffsetTime.of(21, 0, 0, 0, ZoneOffset.UTC)
+        this.startDayTime = LocalTime.of(9, 0)
+        this.endDayTime = LocalTime.of(21, 0)
         this.notificationsPerDay = 5
+        this.timezone = "UTC"
       }
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
     whenever(getNotificationPreferencesDbPort.findByUserId(userId)).thenReturn(listOf(preference))

@@ -1,6 +1,7 @@
 package ru.vachoo.notifier.adapter.out.db.schedulednotification
 
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import org.jooq.DSLContext
 import org.jooq.impl.DSL
@@ -13,20 +14,23 @@ import ru.vachoo.notifier.domain.enums.NotificationStatus
 @Component
 class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNotificationDbPort {
 
+  private val log = org.slf4j.LoggerFactory.getLogger(javaClass)
+
   override fun save(scheduledNotification: ScheduledNotification) {
+    log.info("Saving notification: scheduledAt={}", scheduledNotification.scheduledAt)
     dslContext
       .insertInto(
-        org.jooq.impl.DSL.table("scheduled_notifications"),
-        org.jooq.impl.DSL.field("id"),
-        org.jooq.impl.DSL.field("user_id"),
-        org.jooq.impl.DSL.field("status"),
-        org.jooq.impl.DSL.field("message"),
-        org.jooq.impl.DSL.field("scheduled_at"),
-        org.jooq.impl.DSL.field("retry_count"),
-        org.jooq.impl.DSL.field("next_retry_at"),
-        org.jooq.impl.DSL.field("created_at"),
-        org.jooq.impl.DSL.field("updated_at"),
-        org.jooq.impl.DSL.field("sent_at"),
+        DSL.table("scheduled_notifications"),
+        DSL.field("id"),
+        DSL.field("user_id"),
+        DSL.field("status"),
+        DSL.field("message"),
+        DSL.field("scheduled_at"),
+        DSL.field("retry_count"),
+        DSL.field("next_retry_at"),
+        DSL.field("created_at"),
+        DSL.field("updated_at"),
+        DSL.field("sent_at"),
       )
       .values(
         scheduledNotification.id,
@@ -40,54 +44,47 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
         scheduledNotification.updatedAt,
         scheduledNotification.sentAt,
       )
-      .onConflict(org.jooq.impl.DSL.field("id"))
+      .onConflict(DSL.field("id"))
       .doUpdate()
-      .set(org.jooq.impl.DSL.field("user_id"), scheduledNotification.userId)
-      .set(org.jooq.impl.DSL.field("status"), scheduledNotification.status.name)
-      .set(org.jooq.impl.DSL.field("message"), scheduledNotification.message)
-      .set(org.jooq.impl.DSL.field("scheduled_at"), scheduledNotification.scheduledAt)
-      .set(org.jooq.impl.DSL.field("retry_count"), scheduledNotification.retryCount)
-      .set(org.jooq.impl.DSL.field("next_retry_at"), scheduledNotification.nextRetryAt)
-      .set(
-        org.jooq.impl.DSL.field("updated_at"),
-        java.time.LocalDateTime.now(java.time.ZoneOffset.UTC),
-      )
-      .set(org.jooq.impl.DSL.field("sent_at"), scheduledNotification.sentAt)
+      .set(DSL.field("user_id"), scheduledNotification.userId)
+      .set(DSL.field("status"), scheduledNotification.status.name)
+      .set(DSL.field("message"), scheduledNotification.message)
+      .set(DSL.field("scheduled_at"), scheduledNotification.scheduledAt)
+      .set(DSL.field("retry_count"), scheduledNotification.retryCount)
+      .set(DSL.field("next_retry_at"), scheduledNotification.nextRetryAt)
+      .set(DSL.field("updated_at"), OffsetDateTime.now(ZoneOffset.UTC))
+      .set(DSL.field("sent_at"), scheduledNotification.sentAt)
       .execute()
   }
 
   override fun findPendingForProcessing(limit: Int): List<ScheduledNotification> {
-    val now = java.time.LocalDateTime.now(java.time.ZoneOffset.UTC)
+    val now = OffsetDateTime.now(ZoneOffset.UTC)
     return dslContext
       .select(
-        org.jooq.impl.DSL.field("id"),
-        org.jooq.impl.DSL.field("user_id"),
-        org.jooq.impl.DSL.field("status"),
-        org.jooq.impl.DSL.field("message"),
-        org.jooq.impl.DSL.field("scheduled_at"),
-        org.jooq.impl.DSL.field("retry_count"),
-        org.jooq.impl.DSL.field("next_retry_at"),
-        org.jooq.impl.DSL.field("created_at"),
-        org.jooq.impl.DSL.field("updated_at"),
-        org.jooq.impl.DSL.field("sent_at"),
+        DSL.field("id"),
+        DSL.field("user_id"),
+        DSL.field("status"),
+        DSL.field("message"),
+        DSL.field("scheduled_at"),
+        DSL.field("retry_count"),
+        DSL.field("next_retry_at"),
+        DSL.field("created_at"),
+        DSL.field("updated_at"),
+        DSL.field("sent_at"),
       )
-      .from(org.jooq.impl.DSL.table("scheduled_notifications"))
+      .from(DSL.table("scheduled_notifications"))
       .where(
-        org.jooq.impl.DSL.field("status")
+        DSL.field("status")
           .eq(NotificationStatus.PENDING.name)
-          .or(org.jooq.impl.DSL.field("status").eq(NotificationStatus.FAILED.name))
+          .or(DSL.field("status").eq(NotificationStatus.FAILED.name))
       )
-      .and(
-        org.jooq.impl.DSL.field("scheduled_at")
-          .le(now)
-          .or(org.jooq.impl.DSL.field("next_retry_at").le(now))
-      )
+      .and(DSL.field("scheduled_at").le(now).or(DSL.field("next_retry_at").le(now)))
       .limit(limit)
       .fetch()
       .map { record ->
         ScheduledNotification().apply {
-          this.id = record.get(org.jooq.impl.DSL.field("id"), UUID::class.java)
-          this.userId = record.get(org.jooq.impl.DSL.field("user_id"), UUID::class.java)
+          this.id = record.get(DSL.field("id"), UUID::class.java)
+          this.userId = record.get(DSL.field("user_id"), UUID::class.java)
           this.status =
             try {
               NotificationStatus.valueOf(
@@ -97,21 +94,19 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
             } catch (e: Exception) {
               NotificationStatus.PENDING
             }
-          this.message = record.get(org.jooq.impl.DSL.field("message"), String::class.java) ?: ""
+          this.message = record.get(DSL.field("message"), String::class.java) ?: ""
           this.scheduledAt =
-            record.get(org.jooq.impl.DSL.field("scheduled_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
-          this.retryCount =
-            record.get(org.jooq.impl.DSL.field("retry_count"), Int::class.javaObjectType) ?: 0
-          this.nextRetryAt =
-            record.get(org.jooq.impl.DSL.field("next_retry_at"), OffsetDateTime::class.java)
+            record.get(DSL.field("scheduled_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
+          this.retryCount = record.get(DSL.field("retry_count"), Int::class.javaObjectType) ?: 0
+          this.nextRetryAt = record.get(DSL.field("next_retry_at"), OffsetDateTime::class.java)
           this.createdAt =
-            record.get(org.jooq.impl.DSL.field("created_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
+            record.get(DSL.field("created_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
           this.updatedAt =
-            record.get(org.jooq.impl.DSL.field("updated_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
-          this.sentAt = record.get(org.jooq.impl.DSL.field("sent_at"), OffsetDateTime::class.java)
+            record.get(DSL.field("updated_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
+          this.sentAt = record.get(DSL.field("sent_at"), OffsetDateTime::class.java)
         }
       }
   }
@@ -128,24 +123,24 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
   override fun findByUserId(userId: UUID): List<ScheduledNotification> {
     return dslContext
       .select(
-        org.jooq.impl.DSL.field("id"),
-        org.jooq.impl.DSL.field("user_id"),
-        org.jooq.impl.DSL.field("status"),
-        org.jooq.impl.DSL.field("message"),
-        org.jooq.impl.DSL.field("scheduled_at"),
-        org.jooq.impl.DSL.field("retry_count"),
-        org.jooq.impl.DSL.field("next_retry_at"),
-        org.jooq.impl.DSL.field("created_at"),
-        org.jooq.impl.DSL.field("updated_at"),
-        org.jooq.impl.DSL.field("sent_at"),
+        DSL.field("id"),
+        DSL.field("user_id"),
+        DSL.field("status"),
+        DSL.field("message"),
+        DSL.field("scheduled_at"),
+        DSL.field("retry_count"),
+        DSL.field("next_retry_at"),
+        DSL.field("created_at"),
+        DSL.field("updated_at"),
+        DSL.field("sent_at"),
       )
-      .from(org.jooq.impl.DSL.table("scheduled_notifications"))
-      .where(org.jooq.impl.DSL.field("user_id").eq(userId))
+      .from(DSL.table("scheduled_notifications"))
+      .where(DSL.field("user_id").eq(userId))
       .fetch()
       .map { record ->
         ScheduledNotification().apply {
-          this.id = record.get(org.jooq.impl.DSL.field("id"), UUID::class.java)
-          this.userId = record.get(org.jooq.impl.DSL.field("user_id"), UUID::class.java)
+          this.id = record.get(DSL.field("id"), UUID::class.java)
+          this.userId = record.get(DSL.field("user_id"), UUID::class.java)
           this.status =
             try {
               NotificationStatus.valueOf(
@@ -155,21 +150,19 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
             } catch (e: Exception) {
               NotificationStatus.PENDING
             }
-          this.message = record.get(org.jooq.impl.DSL.field("message"), String::class.java) ?: ""
+          this.message = record.get(DSL.field("message"), String::class.java) ?: ""
           this.scheduledAt =
-            record.get(org.jooq.impl.DSL.field("scheduled_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
-          this.retryCount =
-            record.get(org.jooq.impl.DSL.field("retry_count"), Int::class.javaObjectType) ?: 0
-          this.nextRetryAt =
-            record.get(org.jooq.impl.DSL.field("next_retry_at"), OffsetDateTime::class.java)
+            record.get(DSL.field("scheduled_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
+          this.retryCount = record.get(DSL.field("retry_count"), Int::class.javaObjectType) ?: 0
+          this.nextRetryAt = record.get(DSL.field("next_retry_at"), OffsetDateTime::class.java)
           this.createdAt =
-            record.get(org.jooq.impl.DSL.field("created_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
+            record.get(DSL.field("created_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
           this.updatedAt =
-            record.get(org.jooq.impl.DSL.field("updated_at"), OffsetDateTime::class.java)
-              ?: OffsetDateTime.now(java.time.ZoneOffset.UTC)
-          this.sentAt = record.get(org.jooq.impl.DSL.field("sent_at"), OffsetDateTime::class.java)
+            record.get(DSL.field("updated_at"), OffsetDateTime::class.java)
+              ?: OffsetDateTime.now(ZoneOffset.UTC)
+          this.sentAt = record.get(DSL.field("sent_at"), OffsetDateTime::class.java)
         }
       }
   }

@@ -100,6 +100,12 @@ open class NotificationPreferences(
      */
     val NOTIFICATIONS_PER_DAY: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, Int?> = createField(DSL.name("notifications_per_day"), SQLDataType.INTEGER.nullable(false), this, "")
 
+    /**
+     * The column
+     * <code>notifier_service.notification_preferences.timezone</code>.
+     */
+    val TIMEZONE: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, String?> = createField(DSL.name("timezone"), SQLDataType.VARCHAR(50).nullable(false).defaultValue(DSL.field(DSL.raw("'UTC'::character varying"), SQLDataType.VARCHAR)), this, "")
+
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)

@@ -37,6 +37,10 @@ open class NotificationPreferencesRecord() : UpdatableRecordImpl<NotificationPre
         set(value): Unit = set(4, value)
         get(): Int? = get(4) as Int?
 
+    open var timezone: String?
+        set(value): Unit = set(5, value)
+        get(): String? = get(5) as String?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -46,12 +50,13 @@ open class NotificationPreferencesRecord() : UpdatableRecordImpl<NotificationPre
     /**
      * Create a detached, initialised NotificationPreferencesRecord
      */
-    constructor(id: UUID? = null, userId: UUID? = null, startDayTime: LocalTime? = null, endDayTime: LocalTime? = null, notificationsPerDay: Int? = null): this() {
+    constructor(id: UUID? = null, userId: UUID? = null, startDayTime: LocalTime? = null, endDayTime: LocalTime? = null, notificationsPerDay: Int? = null, timezone: String? = null): this() {
         this.id = id
         this.userId = userId
         this.startDayTime = startDayTime
         this.endDayTime = endDayTime
         this.notificationsPerDay = notificationsPerDay
+        this.timezone = timezone
         resetTouchedOnNotNull()
     }
 }

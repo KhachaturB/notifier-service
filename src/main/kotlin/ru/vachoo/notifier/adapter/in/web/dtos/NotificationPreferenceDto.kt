@@ -26,5 +26,10 @@ data class NotificationPreferenceDto(
   )
   var endDayTime: LocalTime? = null,
   var notificationsPerDay: Int? = null,
+  @param:Schema(
+    description = "User's timezone (e.g., Europe/Moscow)",
+    type = "string",
+    example = "Europe/Moscow",
+  )
   var timezone: String? = null,
 )

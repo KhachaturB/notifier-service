@@ -4,7 +4,7 @@ import java.util.UUID
 import org.modelmapper.ModelMapper
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -24,7 +24,7 @@ class NotificationPreferencesControllerV1(
   val getNotificationPreferencesUseCase: GetNotificationPreferencesUseCase,
 ) {
 
-  @PutMapping
+  @PostMapping
   fun setNotificationPreference(@RequestBody dto: NotificationPreferenceDto) {
     try {
       val preference = modelMapper.map(dto, NotificationPreference::class.java)
