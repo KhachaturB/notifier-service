@@ -9,4 +9,6 @@ interface UserDbPort {
   fun saveUser(user: User)
 
   fun existsById(userId: UUID): Boolean
+
+  fun findUserTokenById(userId: UUID): String?
 }

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-username-to-users
+      author: agent
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  type: VARCHAR(255)

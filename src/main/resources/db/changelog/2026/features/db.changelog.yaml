@@ -23,3 +23,11 @@ databaseChangeLog:
       file: 006-scheduled-notifications-table.yaml
       relativeToChangelogFile: true
       labels: "Features"
+  - include:
+      file: 007-users-apns-token.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 008-users-username.yaml
+      relativeToChangelogFile: true
+      labels: "Features"

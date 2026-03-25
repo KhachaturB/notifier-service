@@ -1,5 +1,6 @@
 package ru.vachoo.notifier.domain.entities
 
+import java.time.Instant
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -9,6 +10,54 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import ru.vachoo.notifier.domain.enums.NotificationStatus
+
+class UserTest {
+
+  @Test
+  fun shouldHaveDefaultValues() {
+    val user = User()
+
+    assertNull(user.id)
+    assertEquals("", user.userToken)
+    assertEquals("", user.username)
+    assertNull(user.apnsToken)
+    assertNull(user.createdAt)
+    assertNull(user.updatedAt)
+  }
+
+  @Test
+  fun shouldAllowSettingAllFields() {
+    val id = UUID.randomUUID()
+    val now = Instant.now()
+    val user =
+      User().apply {
+        this.id = id
+        this.userToken = "token123"
+        this.username = "john"
+        this.apnsToken = "apns-token-abc"
+        this.createdAt = now
+        this.updatedAt = now
+      }
+
+    assertEquals(id, user.id)
+    assertEquals("token123", user.userToken)
+    assertEquals("john", user.username)
+    assertEquals("apns-token-abc", user.apnsToken)
+    assertEquals(now, user.createdAt)
+    assertEquals(now, user.updatedAt)
+  }
+
+  @Test
+  fun shouldAllowSettingApnsTokenToNull() {
+    val user =
+      User().apply {
+        this.apnsToken = "some-token"
+        this.apnsToken = null
+      }
+
+    assertNull(user.apnsToken)
+  }
+}
 
 class NotificationPreferenceTest {
 

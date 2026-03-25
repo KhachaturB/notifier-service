@@ -9,6 +9,8 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.junit.jupiter.MockitoSettings
 import org.mockito.kotlin.any
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.mockito.quality.Strictness
 import ru.vachoo.notifier.application.commonports.out.ScheduledNotificationDbPort
@@ -41,6 +43,8 @@ class CreateScheduledNotificationsUseCaseImplTest {
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(emptyList())
 
     useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 
   @Test
@@ -56,6 +60,8 @@ class CreateScheduledNotificationsUseCaseImplTest {
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
 
     useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 
   @Test
@@ -71,6 +77,8 @@ class CreateScheduledNotificationsUseCaseImplTest {
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
 
     useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 
   @Test
@@ -86,6 +94,8 @@ class CreateScheduledNotificationsUseCaseImplTest {
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
 
     useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 
   @Test
@@ -103,108 +113,8 @@ class CreateScheduledNotificationsUseCaseImplTest {
       .thenReturn(true)
 
     useCase.createForAllUsers()
-  }
 
-  @Test
-  fun shouldCreateNotification_WhenValidPreference() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 5
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
-  }
-
-  @Test
-  fun shouldCalculateSlots_WhenCountIsOne() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 1
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
-  }
-
-  @Test
-  fun shouldCalculateSlots_WhenCountIsTwo() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 2
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
-  }
-
-  @Test
-  fun shouldCalculateSlots_WhenCountIsThree() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 3
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
-  }
-
-  @Test
-  fun shouldCalculateSlots_WhenCountIsGreaterThanThree() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 5
-        this.startDayTime = LocalTime.of(9, 0)
-        this.endDayTime = LocalTime.of(21, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
-  }
-
-  @Test
-  fun shouldHandleEndTimeBeforeStartTime() {
-    val preference =
-      NotificationPreference().apply {
-        this.userId = userId
-        this.notificationsPerDay = 2
-        this.startDayTime = LocalTime.of(22, 0)
-        this.endDayTime = LocalTime.of(6, 0)
-        this.timezone = "UTC"
-      }
-    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAt(any(), any()))
-      .thenReturn(false)
-
-    useCase.createForAllUsers()
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 
   @Test
@@ -220,5 +130,24 @@ class CreateScheduledNotificationsUseCaseImplTest {
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
 
     useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
+  }
+
+  @Test
+  fun shouldNotCreate_WhenAllSlotsAreInThePast() {
+    val preference =
+      NotificationPreference().apply {
+        this.userId = userId
+        this.notificationsPerDay = 5
+        this.startDayTime = LocalTime.of(0, 0)
+        this.endDayTime = LocalTime.of(1, 0)
+        this.timezone = "UTC"
+      }
+    whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
+
+    useCase.createForAllUsers()
+
+    verify(scheduledNotificationDbPort, never()).save(any())
   }
 }

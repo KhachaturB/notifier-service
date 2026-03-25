@@ -89,6 +89,16 @@ open class Users(
      */
     val UPDATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
 
+    /**
+     * The column <code>notifier_service.users.apns_token</code>.
+     */
+    val APNS_TOKEN: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, String?> = createField(DSL.name("apns_token"), SQLDataType.VARCHAR(255), this, "")
+
+    /**
+     * The column <code>notifier_service.users.username</code>.
+     */
+    val USERNAME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, String?> = createField(DSL.name("username"), SQLDataType.VARCHAR(255), this, "")
+
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
