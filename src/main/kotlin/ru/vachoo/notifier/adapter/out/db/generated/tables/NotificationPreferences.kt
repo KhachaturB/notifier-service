@@ -5,6 +5,7 @@ package ru.vachoo.notifier.adapter.`out`.db.generated.tables
 
 
 import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import kotlin.collections.Collection
@@ -13,6 +14,7 @@ import kotlin.collections.List
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
+import org.jooq.Index
 import org.jooq.InverseForeignKey
 import org.jooq.Name
 import org.jooq.Path
@@ -106,6 +108,18 @@ open class NotificationPreferences(
      */
     val TIMEZONE: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, String?> = createField(DSL.name("timezone"), SQLDataType.VARCHAR(50).nullable(false).defaultValue(DSL.field(DSL.raw("'UTC'::character varying"), SQLDataType.VARCHAR)), this, "")
 
+    /**
+     * The column
+     * <code>notifier_service.notification_preferences.created_at</code>.
+     */
+    val CREATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
+    /**
+     * The column
+     * <code>notifier_service.notification_preferences.updated_at</code>.
+     */
+    val UPDATED_AT: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, OffsetDateTime?> = createField(DSL.name("updated_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
+
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
@@ -141,6 +155,7 @@ open class NotificationPreferences(
         override fun `as`(alias: Table<*>): NotificationPreferencesPath = NotificationPreferencesPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else ru.vachoo.notifier.adapter.`out`.db.generated.NotifierService.NOTIFIER_SERVICE
+    override fun getIndexes(): List<Index> = listOf(ru.vachoo.notifier.adapter.`out`.db.generated.indexes.IDX_NOTIFICATION_PREFERENCES_USER_ID)
     override fun getPrimaryKey(): UniqueKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord> = ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES_ID
     override fun getReferences(): List<ForeignKey<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.NotificationPreferencesRecord, *>> = listOf(ru.vachoo.notifier.adapter.`out`.db.generated.keys.NOTIFICATION_PREFERENCES__FK_NOTIFICATION_PREFERENCES_USER)
 

@@ -31,3 +31,15 @@ databaseChangeLog:
       file: 008-users-username.yaml
       relativeToChangelogFile: true
       labels: "Features"
+  - include:
+      file: 009-notification-preferences-timestamps.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 010-notification-preferences-user-unique.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 011-users-quiz-answers.yaml
+      relativeToChangelogFile: true
+      labels: "Features"

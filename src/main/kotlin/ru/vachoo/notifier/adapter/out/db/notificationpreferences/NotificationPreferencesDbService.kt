@@ -1,6 +1,8 @@
 package ru.vachoo.notifier.adapter.out.db.notificationpreferences
 
 import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
@@ -16,20 +18,34 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
 
   override fun saveNotificationPreference(preference: NotificationPreference) {
     val userId = preference.userId ?: return
+    val now = OffsetDateTime.now(ZoneOffset.UTC)
+    val id = preference.id ?: UUID.randomUUID()
 
-    val existingPref = findByUserIdSingle(userId)
-    if (existingPref != null) {
+    val existing =
       dslContext
-        .update(NOTIFICATION_PREFERENCES)
-        .set(NOTIFICATION_PREFERENCES.START_DAY_TIME, preference.startDayTime)
-        .set(NOTIFICATION_PREFERENCES.END_DAY_TIME, preference.endDayTime)
-        .set(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY, preference.notificationsPerDay)
-        .set(NOTIFICATION_PREFERENCES.TIMEZONE, preference.timezone)
+        .select(
+          NOTIFICATION_PREFERENCES.START_DAY_TIME,
+          NOTIFICATION_PREFERENCES.END_DAY_TIME,
+          NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY,
+          NOTIFICATION_PREFERENCES.TIMEZONE,
+        )
+        .from(NOTIFICATION_PREFERENCES)
         .where(NOTIFICATION_PREFERENCES.USER_ID.eq(userId))
-        .execute()
-      preference.id = existingPref.id
-    } else {
-      preference.id = UUID.randomUUID()
+        .fetchOne()
+
+    val dbStartDayTime = existing?.get(NOTIFICATION_PREFERENCES.START_DAY_TIME)
+    val dbEndDayTime = existing?.get(NOTIFICATION_PREFERENCES.END_DAY_TIME)
+    val dbNotificationsPerDay = existing?.get(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY)
+    val dbTimezone = existing?.get(NOTIFICATION_PREFERENCES.TIMEZONE)
+
+    val hasChanges =
+      existing == null ||
+        dbStartDayTime != preference.startDayTime ||
+        dbEndDayTime != preference.endDayTime ||
+        dbNotificationsPerDay != preference.notificationsPerDay ||
+        dbTimezone != preference.timezone
+
+    if (existing == null) {
       dslContext
         .insertInto(NOTIFICATION_PREFERENCES)
         .columns(
@@ -39,16 +55,44 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
           NOTIFICATION_PREFERENCES.END_DAY_TIME,
           NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY,
           NOTIFICATION_PREFERENCES.TIMEZONE,
+          NOTIFICATION_PREFERENCES.CREATED_AT,
+          NOTIFICATION_PREFERENCES.UPDATED_AT,
         )
         .values(
-          preference.id,
-          preference.userId,
+          id,
+          userId,
           preference.startDayTime,
           preference.endDayTime,
           preference.notificationsPerDay,
           preference.timezone,
+          now,
+          now,
         )
         .execute()
+    } else if (hasChanges) {
+      dslContext
+        .update(NOTIFICATION_PREFERENCES)
+        .set(NOTIFICATION_PREFERENCES.START_DAY_TIME, preference.startDayTime)
+        .set(NOTIFICATION_PREFERENCES.END_DAY_TIME, preference.endDayTime)
+        .set(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY, preference.notificationsPerDay)
+        .set(NOTIFICATION_PREFERENCES.TIMEZONE, preference.timezone)
+        .set(NOTIFICATION_PREFERENCES.UPDATED_AT, now)
+        .where(NOTIFICATION_PREFERENCES.USER_ID.eq(userId))
+        .execute()
+    }
+
+    preference.id = id
+
+    val savedTimestamps =
+      dslContext
+        .select(NOTIFICATION_PREFERENCES.CREATED_AT, NOTIFICATION_PREFERENCES.UPDATED_AT)
+        .from(NOTIFICATION_PREFERENCES)
+        .where(NOTIFICATION_PREFERENCES.USER_ID.eq(userId))
+        .fetchOne()
+
+    if (savedTimestamps != null) {
+      preference.createdAt = savedTimestamps[NOTIFICATION_PREFERENCES.CREATED_AT] ?: now
+      preference.updatedAt = savedTimestamps[NOTIFICATION_PREFERENCES.UPDATED_AT] ?: now
     }
   }
 
@@ -80,6 +124,10 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
           this.endDayTime = record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME) ?: LocalTime.of(21, 0)
           this.notificationsPerDay = record.get(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY) ?: 5
           this.timezone = record.get(NOTIFICATION_PREFERENCES.TIMEZONE) ?: "UTC"
+          this.createdAt =
+            record.get(NOTIFICATION_PREFERENCES.CREATED_AT) ?: OffsetDateTime.now(ZoneOffset.UTC)
+          this.updatedAt =
+            record.get(NOTIFICATION_PREFERENCES.UPDATED_AT) ?: OffsetDateTime.now(ZoneOffset.UTC)
         }
       }
 
@@ -93,6 +141,10 @@ class NotificationPreferencesDbService(val dslContext: DSLContext) :
         this.endDayTime = record.get(NOTIFICATION_PREFERENCES.END_DAY_TIME) ?: LocalTime.of(21, 0)
         this.notificationsPerDay = record.get(NOTIFICATION_PREFERENCES.NOTIFICATIONS_PER_DAY) ?: 5
         this.timezone = record.get(NOTIFICATION_PREFERENCES.TIMEZONE) ?: "UTC"
+        this.createdAt =
+          record.get(NOTIFICATION_PREFERENCES.CREATED_AT) ?: OffsetDateTime.now(ZoneOffset.UTC)
+        this.updatedAt =
+          record.get(NOTIFICATION_PREFERENCES.UPDATED_AT) ?: OffsetDateTime.now(ZoneOffset.UTC)
       }
     }
 }

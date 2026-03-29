@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-unique-constraint-notification-preferences-user-id
+      author: agent
+      changes:
+        - createIndex:
+            indexName: idx_notification_preferences_user_id
+            tableName: notification_preferences
+            columns:
+              - column:
+                  name: user_id
+            unique: true

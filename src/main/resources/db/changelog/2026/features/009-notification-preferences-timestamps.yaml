@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-timestamps-to-notification-preferences
+      author: agent
+      changes:
+        - addColumn:
+            tableName: notification_preferences
+            columns:
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: NOW()
+        - addColumn:
+            tableName: notification_preferences
+            columns:
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: NOW()

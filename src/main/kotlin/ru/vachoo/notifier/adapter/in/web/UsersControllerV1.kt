@@ -40,6 +40,10 @@ class UsersControllerV1(
     val user =
       getUserUseCase.get(userId)
         ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-    return UserResponseDto(id = user.id.toString(), username = user.username)
+    return UserResponseDto(
+      id = user.id.toString(),
+      username = user.username,
+      quizAnswers = user.quizAnswers,
+    )
   }
 }

@@ -5,6 +5,7 @@ package ru.vachoo.notifier.adapter.`out`.db.generated.tables.records
 
 
 import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.util.UUID
 
 import org.jooq.Record1
@@ -41,6 +42,14 @@ open class NotificationPreferencesRecord() : UpdatableRecordImpl<NotificationPre
         set(value): Unit = set(5, value)
         get(): String? = get(5) as String?
 
+    open var createdAt: OffsetDateTime?
+        set(value): Unit = set(6, value)
+        get(): OffsetDateTime? = get(6) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(7, value)
+        get(): OffsetDateTime? = get(7) as OffsetDateTime?
+
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -50,13 +59,15 @@ open class NotificationPreferencesRecord() : UpdatableRecordImpl<NotificationPre
     /**
      * Create a detached, initialised NotificationPreferencesRecord
      */
-    constructor(id: UUID? = null, userId: UUID? = null, startDayTime: LocalTime? = null, endDayTime: LocalTime? = null, notificationsPerDay: Int? = null, timezone: String? = null): this() {
+    constructor(id: UUID? = null, userId: UUID? = null, startDayTime: LocalTime? = null, endDayTime: LocalTime? = null, notificationsPerDay: Int? = null, timezone: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.id = id
         this.userId = userId
         this.startDayTime = startDayTime
         this.endDayTime = endDayTime
         this.notificationsPerDay = notificationsPerDay
         this.timezone = timezone
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
         resetTouchedOnNotNull()
     }
 }

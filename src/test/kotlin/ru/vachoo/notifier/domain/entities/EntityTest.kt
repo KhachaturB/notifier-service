@@ -1,6 +1,5 @@
 package ru.vachoo.notifier.domain.entities
 
-import java.time.Instant
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -21,14 +20,14 @@ class UserTest {
     assertEquals("", user.userToken)
     assertEquals("", user.username)
     assertNull(user.apnsToken)
-    assertNull(user.createdAt)
-    assertNull(user.updatedAt)
+    assertNotNull(user.createdAt)
+    assertNotNull(user.updatedAt)
   }
 
   @Test
   fun shouldAllowSettingAllFields() {
     val id = UUID.randomUUID()
-    val now = Instant.now()
+    val now = OffsetDateTime.now(ZoneOffset.UTC)
     val user =
       User().apply {
         this.id = id

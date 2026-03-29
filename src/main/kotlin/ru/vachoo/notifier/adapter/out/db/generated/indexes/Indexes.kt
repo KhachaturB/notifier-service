@@ -15,5 +15,6 @@ import org.jooq.impl.Internal
 // INDEX definitions
 // -------------------------------------------------------------------------
 
+val IDX_NOTIFICATION_PREFERENCES_USER_ID: Index = Internal.createIndex(DSL.name("idx_notification_preferences_user_id"), ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES, arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES.USER_ID), true)
 val IDX_SCHEDULED_NOTIFICATIONS_NEXT_RETRY: Index = Internal.createIndex(DSL.name("idx_scheduled_notifications_next_retry"), ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS, arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS.NEXT_RETRY_AT), false)
 val IDX_SCHEDULED_NOTIFICATIONS_STATUS_SCHEDULED: Index = Internal.createIndex(DSL.name("idx_scheduled_notifications_status_scheduled"), ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS, arrayOf(ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS.STATUS, ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS.SCHEDULED_AT), false)

@@ -1,6 +1,7 @@
 package ru.vachoo.notifier.domain.entities
 
-import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.UUID
 
 class User {
@@ -8,6 +9,7 @@ class User {
   var userToken: String = ""
   var username: String = ""
   var apnsToken: String? = null
-  var createdAt: Instant? = null
-  var updatedAt: Instant? = null
+  var quizAnswers: List<Int>? = null
+  var createdAt: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
+  var updatedAt: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 }

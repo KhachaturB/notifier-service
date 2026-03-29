@@ -99,6 +99,11 @@ open class Users(
      */
     val USERNAME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, String?> = createField(DSL.name("username"), SQLDataType.VARCHAR(255), this, "")
 
+    /**
+     * The column <code>notifier_service.users.quiz_answers</code>.
+     */
+    val QUIZ_ANSWERS: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, Array<Int?>?> = createField(DSL.name("quiz_answers"), SQLDataType.INTEGER.array(), this, "")
+
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
