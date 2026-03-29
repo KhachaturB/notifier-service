@@ -88,7 +88,6 @@ class CreateScheduledNotificationsUseCaseImpl(
     }
 
     val scheduledAtUtc = nextSlot.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
-    log.info("DEBUG: scheduledAtUtc = {}", scheduledAtUtc)
 
     if (scheduledNotificationDbPort.existsByUserIdAndScheduledAt(userId, scheduledAtUtc)) {
       log.debug("Notification already exists for user={} at {}", userId, scheduledAtUtc)
