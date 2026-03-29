@@ -21,21 +21,16 @@ class UsersDbService(val dslContext: DSLContext) : UserDbPort {
 
     val existing =
       dslContext
-        .select(USERS.USER_TOKEN, USERS.USERNAME, USERS.APNS_TOKEN, USERS.QUIZ_ANSWERS)
+        .select(USERS.USER_TOKEN, USERS.USERNAME, USERS.APNS_TOKEN)
         .from(USERS)
         .where(USERS.ID.eq(id))
         .fetchOne()
-
-    val existingQuizAnswers = existing?.get(USERS.QUIZ_ANSWERS)?.toList()
 
     val hasChanges =
       existing == null ||
         existing[USERS.USER_TOKEN] != user.userToken ||
         existing[USERS.USERNAME] != user.username ||
-        existing[USERS.APNS_TOKEN] != user.apnsToken ||
-        existingQuizAnswers != user.quizAnswers
-
-    val quizAnswersArray: Array<Int?>? = user.quizAnswers?.map { it as Int? }?.toTypedArray()
+        existing[USERS.APNS_TOKEN] != user.apnsToken
 
     if (existing == null) {
       dslContext
@@ -45,11 +40,10 @@ class UsersDbService(val dslContext: DSLContext) : UserDbPort {
           USERS.USER_TOKEN,
           USERS.USERNAME,
           USERS.APNS_TOKEN,
-          USERS.QUIZ_ANSWERS,
           USERS.CREATED_AT,
           USERS.UPDATED_AT,
         )
-        .values(id, user.userToken, user.username, user.apnsToken, quizAnswersArray, now, now)
+        .values(id, user.userToken, user.username, user.apnsToken, now, now)
         .execute()
     } else if (hasChanges) {
       dslContext
@@ -57,7 +51,6 @@ class UsersDbService(val dslContext: DSLContext) : UserDbPort {
         .set(USERS.USER_TOKEN, user.userToken)
         .set(USERS.USERNAME, user.username)
         .set(USERS.APNS_TOKEN, user.apnsToken)
-        .set(USERS.QUIZ_ANSWERS, quizAnswersArray)
         .set(USERS.UPDATED_AT, now)
         .where(USERS.ID.eq(id))
         .execute()

@@ -43,3 +43,15 @@ databaseChangeLog:
       file: 011-users-quiz-answers.yaml
       relativeToChangelogFile: true
       labels: "Features"
+  - include:
+      file: 012-remove-quiz-answers-from-users.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 013-create-quiz-results-table.yaml
+      relativeToChangelogFile: true
+      labels: "Features"
+  - include:
+      file: 014-rename-answer-to-answers.yaml
+      relativeToChangelogFile: true
+      labels: "Features"

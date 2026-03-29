@@ -9,7 +9,6 @@ class User {
   var userToken: String = ""
   var username: String = ""
   var apnsToken: String? = null
-  var quizAnswers: List<Int>? = null
   var createdAt: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
   var updatedAt: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 }

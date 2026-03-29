@@ -99,11 +99,6 @@ open class Users(
      */
     val USERNAME: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, String?> = createField(DSL.name("username"), SQLDataType.VARCHAR(255), this, "")
 
-    /**
-     * The column <code>notifier_service.users.quiz_answers</code>.
-     */
-    val QUIZ_ANSWERS: TableField<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord, Array<Int?>?> = createField(DSL.name("quiz_answers"), SQLDataType.INTEGER.array(), this, "")
-
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
     private constructor(alias: Name, aliased: Table<ru.vachoo.notifier.adapter.`out`.db.generated.tables.records.UsersRecord>?, where: Condition?): this(alias, null, null, null, aliased, null, where)
@@ -185,6 +180,22 @@ open class Users(
 
     val notificationPreferences: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath
         get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NotificationPreferencesPath = notificationPreferences()
+
+    private lateinit var _quizResults: ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QuizResultsPath
+
+    /**
+     * Get the implicit to-many join path to the
+     * <code>notifier_service.quiz_results</code> table
+     */
+    fun quizResults(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QuizResultsPath {
+        if (!this::_quizResults.isInitialized)
+            _quizResults = ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QuizResultsPath(this, null, ru.vachoo.notifier.adapter.`out`.db.generated.keys.QUIZ_RESULTS__FK_QUIZ_RESULTS_USER.inverseKey)
+
+        return _quizResults;
+    }
+
+    val quizResults: ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QuizResultsPath
+        get(): ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QuizResultsPath = quizResults()
 
     private lateinit var _scheduledNotifications: ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.ScheduledNotificationsPath
 

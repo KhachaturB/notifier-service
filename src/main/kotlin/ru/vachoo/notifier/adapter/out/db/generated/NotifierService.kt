@@ -41,6 +41,11 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
     val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES
 
     /**
+     * The table <code>notifier_service.quiz_results</code>.
+     */
+    val QUIZ_RESULTS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QUIZ_RESULTS
+
+    /**
      * The table <code>notifier_service.reminders</code>.
      */
     val REMINDERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders get() = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS
@@ -61,6 +66,7 @@ open class NotifierService : SchemaImpl(DSL.name("notifier_service"), ru.vachoo.
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.AchievementDays.ACHIEVEMENT_DAYS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals.GOALS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES,
+        ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QUIZ_RESULTS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.ScheduledNotifications.SCHEDULED_NOTIFICATIONS,
         ru.vachoo.notifier.adapter.`out`.db.generated.tables.Users.USERS

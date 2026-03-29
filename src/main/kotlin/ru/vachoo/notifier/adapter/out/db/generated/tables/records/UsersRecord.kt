@@ -41,10 +41,6 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(ru.vachoo.notifier.a
         set(value): Unit = set(5, value)
         get(): String? = get(5) as String?
 
-    open var quizAnswers: Array<Int?>?
-        set(value): Unit = set(6, value)
-        get(): Array<Int?>? = get(6) as Array<Int?>?
-
     // -------------------------------------------------------------------------
     // Primary key information
     // -------------------------------------------------------------------------
@@ -54,14 +50,13 @@ open class UsersRecord() : UpdatableRecordImpl<UsersRecord>(ru.vachoo.notifier.a
     /**
      * Create a detached, initialised UsersRecord
      */
-    constructor(id: UUID? = null, userToken: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, apnsToken: String? = null, username: String? = null, quizAnswers: Array<Int?>? = null): this() {
+    constructor(id: UUID? = null, userToken: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null, apnsToken: String? = null, username: String? = null): this() {
         this.id = id
         this.userToken = userToken
         this.createdAt = createdAt
         this.updatedAt = updatedAt
         this.apnsToken = apnsToken
         this.username = username
-        this.quizAnswers = quizAnswers
         resetTouchedOnNotNull()
     }
 }

@@ -23,6 +23,11 @@ val GOALS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Goals = ru.vacho
 val NOTIFICATION_PREFERENCES: ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences = ru.vachoo.notifier.adapter.`out`.db.generated.tables.NotificationPreferences.NOTIFICATION_PREFERENCES
 
 /**
+ * The table <code>notifier_service.quiz_results</code>.
+ */
+val QUIZ_RESULTS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults = ru.vachoo.notifier.adapter.`out`.db.generated.tables.QuizResults.QUIZ_RESULTS
+
+/**
  * The table <code>notifier_service.reminders</code>.
  */
 val REMINDERS: ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders = ru.vachoo.notifier.adapter.`out`.db.generated.tables.Reminders.REMINDERS

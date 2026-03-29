@@ -1,7 +1,3 @@
 package ru.vachoo.notifier.adapter.`in`.web.dtos
 
-data class UserResponseDto(
-  var id: String = "",
-  var username: String = "",
-  var quizAnswers: List<Int>? = null,
-)
+data class UserResponseDto(var id: String = "", var username: String = "")

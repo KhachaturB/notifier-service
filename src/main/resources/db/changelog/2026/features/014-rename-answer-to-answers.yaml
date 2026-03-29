@@ -1,0 +1,10 @@
+databaseChangeLog:
+- changeSet:
+    id: rename-answer-to-answers
+    author: developer
+    changes:
+    - renameColumn:
+        tableName: quiz_results
+        oldColumnName: answer
+        newColumnName: answers
+        columnDataType: integer[]
