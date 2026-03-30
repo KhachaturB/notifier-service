@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import ru.vachoo.notifier.adapter.`in`.web.dtos.QuizResultDto
+import ru.vachoo.notifier.adapter.`in`.web.dtos.QuizResultResponseDto
 import ru.vachoo.notifier.adapter.`in`.web.dtos.SaveUserDto
 import ru.vachoo.notifier.adapter.`in`.web.dtos.UserResponseDto
 import ru.vachoo.notifier.application.exceptions.ForbiddenException
@@ -71,12 +72,12 @@ class UsersControllerV1(
     fun getQuizResult(
         @PathVariable userId: UUID,
         @RequestParam userToken: String
-    ): QuizResultDto {
+    ): QuizResultResponseDto {
         try {
             val quizResult =
                 getQuizResultUseCase.get(userId, userToken)
                     ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz result not found")
-            return QuizResultDto(
+            return QuizResultResponseDto(
                 answers = quizResult.answers,
                 primaryGoal = quizResult.primaryGoal,
                 motivationStyle = quizResult.motivationStyle,
