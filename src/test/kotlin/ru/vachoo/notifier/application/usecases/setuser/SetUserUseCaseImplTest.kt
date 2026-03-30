@@ -9,6 +9,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import ru.vachoo.notifier.application.commonports.out.UserDbPort
+import ru.vachoo.notifier.application.exceptions.ForbiddenException
 import ru.vachoo.notifier.domain.entities.User
 
 @ExtendWith(MockitoExtension::class)

@@ -3,61 +3,86 @@ package ru.vachoo.notifier.application.usecases.quizresults
 import java.util.UUID
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import ru.vachoo.notifier.application.commonports.out.UserDbPort
+import ru.vachoo.notifier.application.exceptions.ForbiddenException
 import ru.vachoo.notifier.application.usecases.quizresults.out.QuizResultsDbPort
 import ru.vachoo.notifier.domain.entities.QuizResult
 
 @ExtendWith(MockitoExtension::class)
 class GetQuizResultUseCaseImplTest {
 
-  @Mock private lateinit var quizResultsDbPort: QuizResultsDbPort
+    @Mock private lateinit var quizResultsDbPort: QuizResultsDbPort
 
-  private lateinit var useCase: GetQuizResultUseCaseImpl
+    @Mock private lateinit var userDbPort: UserDbPort
 
-  private val userId = UUID.randomUUID()
+    private lateinit var useCase: GetQuizResultUseCaseImpl
 
-  @BeforeEach
-  fun setUp() {
-    useCase = GetQuizResultUseCaseImpl(quizResultsDbPort)
-  }
+    private val userId = UUID.randomUUID()
+    private val validToken = "valid-token"
 
-  @Test
-  fun shouldReturnQuizResult_WhenFound() {
-    val quizResult = QuizResult()
-    quizResult.userId = userId
-    quizResult.answers = listOf(1, 2, 3)
-    quizResult.primaryGoal = "Lose weight"
-    quizResult.motivationStyle = "achievement"
+    @BeforeEach
+    fun setUp() {
+        useCase = GetQuizResultUseCaseImpl(quizResultsDbPort, userDbPort)
+    }
 
-    whenever(quizResultsDbPort.findByUserId(org.mockito.kotlin.any())).thenReturn(quizResult)
+    @Test
+    fun shouldReturnQuizResult_WhenValidToken() {
+        val quizResult = QuizResult()
+        quizResult.userId = userId
+        quizResult.answers = listOf(1, 2, 3)
+        quizResult.primaryGoal = "Lose weight"
+        quizResult.motivationStyle = "achievement"
 
-    val result = useCase.get(userId)
+        whenever(userDbPort.findUserTokenById(userId)).thenReturn(validToken)
+        whenever(quizResultsDbPort.findByUserId(org.mockito.kotlin.any())).thenReturn(quizResult)
 
-    assertNotNull(result)
-    val captor = argumentCaptor<UUID>()
-    verify(quizResultsDbPort).findByUserId(captor.capture())
-    assertEquals(userId, captor.firstValue)
-    assertEquals(userId, result!!.userId)
-    assertEquals(listOf(1, 2, 3), result.answers)
-    assertEquals("Lose weight", result.primaryGoal)
-    assertEquals("achievement", result.motivationStyle)
-  }
+        val result = useCase.get(userId, validToken)
 
-  @Test
-  fun shouldReturnNull_WhenNotFound() {
-    whenever(quizResultsDbPort.findByUserId(userId)).thenReturn(null)
+        assertNotNull(result)
+        val captor = argumentCaptor<UUID>()
+        verify(quizResultsDbPort).findByUserId(captor.capture())
+        assertEquals(userId, captor.firstValue)
+        assertEquals(userId, result!!.userId)
+        assertEquals(listOf(1, 2, 3), result.answers)
+        assertEquals("Lose weight", result.primaryGoal)
+        assertEquals("achievement", result.motivationStyle)
+    }
 
-    val result = useCase.get(userId)
+    @Test
+    fun shouldReturnNull_WhenQuizResultNotFound() {
+        whenever(userDbPort.findUserTokenById(userId)).thenReturn(validToken)
+        whenever(quizResultsDbPort.findByUserId(userId)).thenReturn(null)
 
-    assertNull(result)
-    verify(quizResultsDbPort).findByUserId(userId)
-  }
+        val result = useCase.get(userId, validToken)
+
+        assert(result == null)
+        verify(quizResultsDbPort).findByUserId(userId)
+    }
+
+    @Test
+    fun shouldThrowForbidden_WhenUserNotFound() {
+        whenever(userDbPort.findUserTokenById(userId)).thenReturn(null)
+
+        assertThrows<ForbiddenException> {
+            useCase.get(userId, validToken)
+        }
+    }
+
+    @Test
+    fun shouldThrowForbidden_WhenInvalidToken() {
+        whenever(userDbPort.findUserTokenById(userId)).thenReturn("different-token")
+
+        assertThrows<ForbiddenException> {
+            useCase.get(userId, validToken)
+        }
+    }
 }

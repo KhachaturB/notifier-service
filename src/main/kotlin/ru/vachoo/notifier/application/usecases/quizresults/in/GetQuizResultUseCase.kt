@@ -4,5 +4,5 @@ import java.util.UUID
 import ru.vachoo.notifier.domain.entities.QuizResult
 
 interface GetQuizResultUseCase {
-  fun get(userId: UUID): QuizResult?
+    fun get(userId: UUID, userToken: String): QuizResult?
 }

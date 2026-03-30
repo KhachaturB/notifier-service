@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import ru.vachoo.notifier.adapter.`in`.web.dtos.QuizResultDto
 import ru.vachoo.notifier.adapter.`in`.web.dtos.SaveUserDto
 import ru.vachoo.notifier.adapter.`in`.web.dtos.UserResponseDto
+import ru.vachoo.notifier.application.exceptions.ForbiddenException
 import ru.vachoo.notifier.application.usecases.getuser.`in`.GetUserUseCase
 import ru.vachoo.notifier.application.usecases.quizresults.`in`.GetQuizResultUseCase
 import ru.vachoo.notifier.application.usecases.quizresults.`in`.SaveQuizResultUseCase
-import ru.vachoo.notifier.application.usecases.setuser.ForbiddenException
 import ru.vachoo.notifier.application.usecases.setuser.`in`.SetUserUseCase
 import ru.vachoo.notifier.domain.entities.QuizResult
 import ru.vachoo.notifier.domain.entities.User
@@ -50,27 +51,38 @@ class UsersControllerV1(
     return UserResponseDto(id = user.id.toString(), username = user.username)
   }
 
-  @PostMapping("/{userId}/quiz-result")
-  fun saveQuizResult(@PathVariable userId: UUID, @RequestBody dto: QuizResultDto) {
-    val quizResult =
-      QuizResult().apply {
-        this.userId = userId
-        this.answers = dto.answers
-        this.primaryGoal = dto.primaryGoal
-        this.motivationStyle = dto.motivationStyle
-      }
-    saveQuizResultUseCase.save(userId, quizResult)
-  }
+@PostMapping("/{userId}/quiz-result")
+    fun saveQuizResult(@PathVariable userId: UUID, @RequestBody dto: QuizResultDto) {
+        try {
+            val quizResult =
+                QuizResult().apply {
+                    this.userId = userId
+                    this.answers = dto.answers
+                    this.primaryGoal = dto.primaryGoal
+                    this.motivationStyle = dto.motivationStyle
+                }
+            saveQuizResultUseCase.save(userId, dto.userToken, quizResult)
+        } catch (e: ForbiddenException) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
+        }
+    }
 
-  @GetMapping("/{userId}/quiz-result")
-  fun getQuizResult(@PathVariable userId: UUID): QuizResultDto {
-    val quizResult =
-      getQuizResultUseCase.get(userId)
-        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz result not found")
-    return QuizResultDto(
-      answers = quizResult.answers,
-      primaryGoal = quizResult.primaryGoal,
-      motivationStyle = quizResult.motivationStyle,
-    )
-  }
+    @GetMapping("/{userId}/quiz-result")
+    fun getQuizResult(
+        @PathVariable userId: UUID,
+        @RequestParam userToken: String
+    ): QuizResultDto {
+        try {
+            val quizResult =
+                getQuizResultUseCase.get(userId, userToken)
+                    ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz result not found")
+            return QuizResultDto(
+                answers = quizResult.answers,
+                primaryGoal = quizResult.primaryGoal,
+                motivationStyle = quizResult.motivationStyle,
+            )
+        } catch (e: ForbiddenException) {
+            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
+        }
+    }
 }

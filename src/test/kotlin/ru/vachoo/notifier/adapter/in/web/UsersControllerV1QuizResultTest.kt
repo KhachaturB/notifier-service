@@ -27,78 +27,86 @@ import ru.vachoo.notifier.domain.entities.QuizResult
 @ExtendWith(MockitoExtension::class)
 class UsersControllerV1QuizResultTest {
 
-  @Mock private lateinit var setUserUseCase: SetUserUseCase
+    @Mock private lateinit var setUserUseCase: SetUserUseCase
 
-  @Mock private lateinit var getUserUseCase: GetUserUseCase
+    @Mock private lateinit var getUserUseCase: GetUserUseCase
 
-  @Mock private lateinit var saveQuizResultUseCase: SaveQuizResultUseCase
+    @Mock private lateinit var saveQuizResultUseCase: SaveQuizResultUseCase
 
-  @Mock private lateinit var getQuizResultUseCase: GetQuizResultUseCase
+    @Mock private lateinit var getQuizResultUseCase: GetQuizResultUseCase
 
-  private lateinit var mockMvc: MockMvc
+    private lateinit var mockMvc: MockMvc
 
-  private val objectMapper: ObjectMapper = jacksonObjectMapper()
+    private val objectMapper: ObjectMapper = jacksonObjectMapper()
 
-  private val userId = UUID.randomUUID()
+    private val userId = UUID.randomUUID()
+    private val validToken = "valid-token"
 
-  @BeforeEach
-  fun setUp() {
-    val modelMapper = ModelMapper()
-    val controller =
-      UsersControllerV1(
-        modelMapper,
-        setUserUseCase,
-        getUserUseCase,
-        saveQuizResultUseCase,
-        getQuizResultUseCase,
-      )
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build()
-  }
+    @BeforeEach
+    fun setUp() {
+        val modelMapper = ModelMapper()
+        val controller =
+            UsersControllerV1(
+                modelMapper,
+                setUserUseCase,
+                getUserUseCase,
+                saveQuizResultUseCase,
+                getQuizResultUseCase,
+            )
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).build()
+    }
 
-  @Test
-  fun shouldSaveQuizResult_WhenValidRequest() {
-    val dto =
-      QuizResultDto(
-        answers = listOf(1, 2, 3),
-        primaryGoal = "Lose weight",
-        motivationStyle = "achievement",
-      )
+    @Test
+    fun shouldSaveQuizResult_WhenValidRequest() {
+        val dto =
+            QuizResultDto(
+                userToken = validToken,
+                answers = listOf(1, 2, 3),
+                primaryGoal = "Lose weight",
+                motivationStyle = "achievement",
+            )
 
-    mockMvc
-      .perform(
-        post("/api/v1/users/{userId}/quiz-result", userId)
-          .contentType(MediaType.APPLICATION_JSON)
-          .content(objectMapper.writeValueAsString(dto))
-      )
-      .andExpect(status().isOk())
-  }
+        mockMvc
+            .perform(
+                post("/api/v1/users/{userId}/quiz-result", userId)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(dto))
+            )
+            .andExpect(status().isOk())
+    }
 
-  @Test
-  fun shouldGetQuizResult_WhenFound() {
-    val quizResult = QuizResult()
-    quizResult.userId = userId
-    quizResult.answers = listOf(1, 2, 3)
-    quizResult.primaryGoal = "Lose weight"
-    quizResult.motivationStyle = "achievement"
+    @Test
+    fun shouldGetQuizResult_WhenFound() {
+        val quizResult = QuizResult()
+        quizResult.userId = userId
+        quizResult.answers = listOf(1, 2, 3)
+        quizResult.primaryGoal = "Lose weight"
+        quizResult.motivationStyle = "achievement"
 
-    whenever(getQuizResultUseCase.get(userId)).thenReturn(quizResult)
+        whenever(getQuizResultUseCase.get(userId, validToken)).thenReturn(quizResult)
 
-    mockMvc
-      .perform(get("/api/v1/users/{userId}/quiz-result", userId))
-      .andExpect(status().isOk())
-.andExpect(jsonPath("$.answers[0]").value(1))
+        mockMvc
+            .perform(
+                get("/api/v1/users/{userId}/quiz-result", userId)
+                    .param("userToken", validToken)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.answers[0]").value(1))
             .andExpect(jsonPath("$.answers[1]").value(2))
             .andExpect(jsonPath("$.answers[2]").value(3))
-      .andExpect(jsonPath("$.primaryGoal").value("Lose weight"))
-      .andExpect(jsonPath("$.motivationStyle").value("achievement"))
-  }
+            .andExpect(jsonPath("$.primaryGoal").value("Lose weight"))
+            .andExpect(jsonPath("$.motivationStyle").value("achievement"))
+    }
 
-  @Test
-  fun shouldReturn404_WhenQuizResultNotFound() {
-    whenever(getQuizResultUseCase.get(userId)).thenReturn(null)
+    @Test
+    fun shouldReturn404_WhenQuizResultNotFound() {
+        whenever(getQuizResultUseCase.get(userId, validToken)).thenReturn(null)
 
-    mockMvc
-      .perform(get("/api/v1/users/{userId}/quiz-result", userId))
-      .andExpect(status().isNotFound())
-  }
+        mockMvc
+            .perform(
+                get("/api/v1/users/{userId}/quiz-result", userId)
+                    .param("userToken", validToken)
+            )
+            .andExpect(status().isNotFound())
+    }
 }
