@@ -12,4 +12,6 @@ interface ScheduledNotificationDbPort {
   fun existsByUserIdAndScheduledAt(userId: UUID, scheduledAt: OffsetDateTime): Boolean
 
   fun findByUserId(userId: UUID): List<ScheduledNotification>
+
+  fun cancelPendingByUserId(userId: UUID)
 }

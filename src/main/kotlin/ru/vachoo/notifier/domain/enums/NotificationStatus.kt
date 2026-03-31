@@ -6,4 +6,5 @@ enum class NotificationStatus {
   SENT,
   FAILED,
   EXHAUSTED,
+  CANCELLED,
 }

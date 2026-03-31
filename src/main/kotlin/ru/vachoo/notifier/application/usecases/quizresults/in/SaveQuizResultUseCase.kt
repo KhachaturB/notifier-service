@@ -4,5 +4,5 @@ import java.util.UUID
 import ru.vachoo.notifier.domain.entities.QuizResult
 
 interface SaveQuizResultUseCase {
-    fun save(userId: UUID, userToken: String, quizResult: QuizResult)
+  fun save(userId: UUID, userToken: String, quizResult: QuizResult)
 }

@@ -166,4 +166,17 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
         }
       }
   }
+
+  override fun cancelPendingByUserId(userId: UUID) {
+    val now = OffsetDateTime.now(ZoneOffset.UTC)
+    val updated =
+      dslContext
+        .update(DSL.table("scheduled_notifications"))
+        .set(DSL.field("status"), NotificationStatus.CANCELLED.name)
+        .set(DSL.field("updated_at"), now)
+        .where(DSL.field("user_id").eq(userId))
+        .and(DSL.field("status").eq(NotificationStatus.PENDING.name))
+        .execute()
+    log.info("Cancelled {} pending notifications for userId={}", updated, userId)
+  }
 }

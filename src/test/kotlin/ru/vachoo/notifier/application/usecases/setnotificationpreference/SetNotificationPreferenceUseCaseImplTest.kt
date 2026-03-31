@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import ru.vachoo.notifier.application.commonports.out.ScheduledNotificationDbPort
 import ru.vachoo.notifier.application.exceptions.UnauthorizedException
 import ru.vachoo.notifier.application.services.TokenValidationService
 import ru.vachoo.notifier.application.usecases.setnotificationpreference.out.SetNotificationPreferenceDbPort
@@ -21,6 +23,8 @@ class SetNotificationPreferenceUseCaseImplTest {
 
   @Mock private lateinit var setNotificationPreferenceDbPort: SetNotificationPreferenceDbPort
 
+  @Mock private lateinit var scheduledNotificationDbPort: ScheduledNotificationDbPort
+
   private lateinit var useCase: SetNotificationPreferenceUseCaseImpl
 
   private val preferenceId = UUID.randomUUID()
@@ -30,7 +34,11 @@ class SetNotificationPreferenceUseCaseImplTest {
   @BeforeEach
   fun setUp() {
     useCase =
-      SetNotificationPreferenceUseCaseImpl(tokenValidationService, setNotificationPreferenceDbPort)
+      SetNotificationPreferenceUseCaseImpl(
+        tokenValidationService,
+        setNotificationPreferenceDbPort,
+        scheduledNotificationDbPort,
+      )
   }
 
   @Test
@@ -45,6 +53,8 @@ class SetNotificationPreferenceUseCaseImplTest {
     whenever(tokenValidationService.validateOrCreateUser(userId, userToken)).thenReturn(true)
 
     useCase.set(preferenceId, preference)
+
+    verify(scheduledNotificationDbPort).cancelPendingByUserId(userId)
   }
 
   @Test

@@ -52,38 +52,38 @@ class UsersControllerV1(
     return UserResponseDto(id = user.id.toString(), username = user.username)
   }
 
-@PostMapping("/{userId}/quiz-result")
-    fun saveQuizResult(@PathVariable userId: UUID, @RequestBody dto: QuizResultDto) {
-        try {
-            val quizResult =
-                QuizResult().apply {
-                    this.userId = userId
-                    this.answers = dto.answers
-                    this.primaryGoal = dto.primaryGoal
-                    this.motivationStyle = dto.motivationStyle
-                }
-            saveQuizResultUseCase.save(userId, dto.userToken, quizResult)
-        } catch (e: ForbiddenException) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
+  @PostMapping("/{userId}/quiz-result")
+  fun saveQuizResult(@PathVariable userId: UUID, @RequestBody dto: QuizResultDto) {
+    try {
+      val quizResult =
+        QuizResult().apply {
+          this.userId = userId
+          this.answers = dto.answers
+          this.primaryGoal = dto.primaryGoal
+          this.motivationStyle = dto.motivationStyle
         }
+      saveQuizResultUseCase.save(userId, dto.userToken, quizResult)
+    } catch (e: ForbiddenException) {
+      throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
     }
+  }
 
-    @GetMapping("/{userId}/quiz-result")
-    fun getQuizResult(
-        @PathVariable userId: UUID,
-        @RequestParam userToken: String
-    ): QuizResultResponseDto {
-        try {
-            val quizResult =
-                getQuizResultUseCase.get(userId, userToken)
-                    ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz result not found")
-            return QuizResultResponseDto(
-                answers = quizResult.answers,
-                primaryGoal = quizResult.primaryGoal,
-                motivationStyle = quizResult.motivationStyle,
-            )
-        } catch (e: ForbiddenException) {
-            throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
-        }
+  @GetMapping("/{userId}/quiz-result")
+  fun getQuizResult(
+    @PathVariable userId: UUID,
+    @RequestParam userToken: String,
+  ): QuizResultResponseDto {
+    try {
+      val quizResult =
+        getQuizResultUseCase.get(userId, userToken)
+          ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Quiz result not found")
+      return QuizResultResponseDto(
+        answers = quizResult.answers,
+        primaryGoal = quizResult.primaryGoal,
+        motivationStyle = quizResult.motivationStyle,
+      )
+    } catch (e: ForbiddenException) {
+      throw ResponseStatusException(HttpStatus.FORBIDDEN, e.message)
     }
+  }
 }

@@ -12,20 +12,20 @@ class QuizResultsDbService(private val dslContext: DSLContext) : QuizResultsDbPo
 
   override fun saveQuizResult(quizResult: QuizResult) {
     val userId = quizResult.userId ?: throw IllegalArgumentException("userId is required")
-val answersArray: Array<Int?>? = quizResult.answers?.toTypedArray()
+    val answersArray: Array<Int?>? = quizResult.answers?.toTypedArray()
 
-        dslContext
-            .insertInto(QUIZ_RESULTS)
-            .columns(
-                QUIZ_RESULTS.USER_ID,
-                QUIZ_RESULTS.ANSWERS,
-                QUIZ_RESULTS.PRIMARY_GOAL,
-                QUIZ_RESULTS.MOTIVATION_STYLE,
-            )
-            .values(userId, answersArray, quizResult.primaryGoal, quizResult.motivationStyle)
-            .onConflict(QUIZ_RESULTS.USER_ID)
-            .doUpdate()
-            .set(QUIZ_RESULTS.ANSWERS, answersArray)
+    dslContext
+      .insertInto(QUIZ_RESULTS)
+      .columns(
+        QUIZ_RESULTS.USER_ID,
+        QUIZ_RESULTS.ANSWERS,
+        QUIZ_RESULTS.PRIMARY_GOAL,
+        QUIZ_RESULTS.MOTIVATION_STYLE,
+      )
+      .values(userId, answersArray, quizResult.primaryGoal, quizResult.motivationStyle)
+      .onConflict(QUIZ_RESULTS.USER_ID)
+      .doUpdate()
+      .set(QUIZ_RESULTS.ANSWERS, answersArray)
       .set(QUIZ_RESULTS.PRIMARY_GOAL, quizResult.primaryGoal)
       .set(QUIZ_RESULTS.MOTIVATION_STYLE, quizResult.motivationStyle)
       .execute()

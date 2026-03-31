@@ -4,6 +4,7 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import ru.vachoo.notifier.application.commonports.out.ScheduledNotificationDbPort
 import ru.vachoo.notifier.application.exceptions.UnauthorizedException
 import ru.vachoo.notifier.application.services.TokenValidationService
 import ru.vachoo.notifier.application.usecases.setnotificationpreference.`in`.SetNotificationPreferenceUseCase
@@ -14,6 +15,7 @@ import ru.vachoo.notifier.domain.entities.NotificationPreference
 class SetNotificationPreferenceUseCaseImpl(
   val tokenValidationService: TokenValidationService,
   val setNotificationPreferenceDbPort: SetNotificationPreferenceDbPort,
+  val scheduledNotificationDbPort: ScheduledNotificationDbPort,
 ) : SetNotificationPreferenceUseCase {
 
   private val log = LoggerFactory.getLogger(javaClass)
@@ -27,6 +29,9 @@ class SetNotificationPreferenceUseCaseImpl(
       log.warn("Invalid token for user: userId={}", userId)
       throw UnauthorizedException("Invalid user token")
     }
+
+    log.info("Cancelling pending notifications for userId={}", userId)
+    scheduledNotificationDbPort.cancelPendingByUserId(userId)
 
     log.info("Setting notification preference for userId={}", userId)
     setNotificationPreferenceDbPort.saveNotificationPreference(preference)

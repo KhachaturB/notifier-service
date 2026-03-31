@@ -70,6 +70,7 @@ This document provides guidelines for agents working on the notifier-service cod
 - Maximum line length: 100 characters
 - Trailing commas enabled
 - Run `./gradlew spotlessApply` before committing
+- **IMPORTANT**: Preserve existing indentation when editing code - match the indentation style of surrounding code
 
 ### Import Organization
 Group imports in this order with blank lines between groups:
