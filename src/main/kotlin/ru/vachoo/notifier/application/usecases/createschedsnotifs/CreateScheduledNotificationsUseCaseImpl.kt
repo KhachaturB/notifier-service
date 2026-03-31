@@ -70,24 +70,29 @@ class CreateScheduledNotificationsUseCaseImpl(
     log.info("Created {} scheduled notifications for all users", totalCreated)
   }
 
-  private fun createNextNotification(
-    userId: UUID,
-    startTime: LocalTime,
-    endTime: LocalTime,
-    count: Int,
-    nowInUserTz: ZonedDateTime,
-    nowUtc: OffsetDateTime,
-  ): Boolean {
-    val slots = calculateSlots(startTime, endTime, count, nowInUserTz)
+private fun createNextNotification(
+        userId: UUID,
+        startTime: LocalTime,
+        endTime: LocalTime,
+        count: Int,
+        nowInUserTz: ZonedDateTime,
+        nowUtc: OffsetDateTime,
+    ): Boolean {
+        val todaySlots = calculateSlots(startTime, endTime, count, nowInUserTz)
 
-    val nextSlot = slots.filter { it.isAfter(nowInUserTz) }.minByOrNull { it }
+        val nextSlot = todaySlots.filter { it.isAfter(nowInUserTz) }.minByOrNull { it }
+            ?: run {
+                val tomorrow = nowInUserTz.plusDays(1)
+                val tomorrowSlots = calculateSlots(startTime, endTime, count, tomorrow)
+                tomorrowSlots.minByOrNull { it }
+            }
 
-    if (nextSlot == null) {
-      log.debug("No upcoming slots for user={}", userId)
-      return false
-    }
+        if (nextSlot == null) {
+            log.debug("No upcoming slots for user={}", userId)
+            return false
+        }
 
-    val scheduledAtUtc = nextSlot.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
+        val scheduledAtUtc = nextSlot.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
 
     if (scheduledNotificationDbPort.existsByUserIdAndScheduledAt(userId, scheduledAtUtc)) {
       log.debug("Notification already exists for user={} at {}", userId, scheduledAtUtc)
