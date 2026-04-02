@@ -22,26 +22,26 @@ import ru.vachoo.notifier.domain.entities.NotificationPreference
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CreateScheduledNotificationsUseCaseImplTest {
 
-@Mock private lateinit var scheduledNotificationDbPort: ScheduledNotificationDbPort
+  @Mock private lateinit var scheduledNotificationDbPort: ScheduledNotificationDbPort
 
-    @Mock private lateinit var notificationPreferencesDbPort: NotificationPreferencesDbPort
+  @Mock private lateinit var notificationPreferencesDbPort: NotificationPreferencesDbPort
 
-    @Mock private lateinit var motivationalMessagesService: MotivationalMessagesService
+  @Mock private lateinit var motivationalMessagesService: MotivationalMessagesService
 
-    private lateinit var useCase: CreateScheduledNotificationsUseCaseImpl
+  private lateinit var useCase: CreateScheduledNotificationsUseCaseImpl
 
   private val userId = UUID.randomUUID()
 
-@BeforeEach
-    fun setUp() {
-        useCase =
-            CreateScheduledNotificationsUseCaseImpl(
-                scheduledNotificationDbPort,
-                notificationPreferencesDbPort,
-                motivationalMessagesService,
-            )
-        whenever(motivationalMessagesService.getRandomMessage()).thenReturn("Test message")
-    }
+  @BeforeEach
+  fun setUp() {
+    useCase =
+      CreateScheduledNotificationsUseCaseImpl(
+        scheduledNotificationDbPort,
+        notificationPreferencesDbPort,
+        motivationalMessagesService,
+      )
+    whenever(motivationalMessagesService.getRandomMessage()).thenReturn("Test message")
+  }
 
   @Test
   fun shouldNotCreate_WhenNoPreferencesExist() {
@@ -114,7 +114,9 @@ class CreateScheduledNotificationsUseCaseImplTest {
         this.timezone = "UTC"
       }
     whenever(notificationPreferencesDbPort.findAll()).thenReturn(listOf(preference))
-    whenever(scheduledNotificationDbPort.existsByUserIdAndScheduledAtAndActiveStatuses(any(), any()))
+    whenever(
+        scheduledNotificationDbPort.existsByUserIdAndScheduledAtAndActiveStatuses(any(), any())
+      )
       .thenReturn(true)
 
     useCase.createForAllUsers()

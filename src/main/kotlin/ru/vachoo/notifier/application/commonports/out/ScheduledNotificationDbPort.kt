@@ -9,7 +9,10 @@ interface ScheduledNotificationDbPort {
 
   fun findPendingForProcessing(limit: Int): List<ScheduledNotification>
 
-  fun existsByUserIdAndScheduledAtAndActiveStatuses(userId: UUID, scheduledAt: OffsetDateTime): Boolean
+  fun existsByUserIdAndScheduledAtAndActiveStatuses(
+    userId: UUID,
+    scheduledAt: OffsetDateTime,
+  ): Boolean
 
   fun findByUserId(userId: UUID): List<ScheduledNotification>
 

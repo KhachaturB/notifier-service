@@ -18,12 +18,12 @@ import ru.vachoo.notifier.domain.enums.NotificationStatus
 
 @Component
 class CreateScheduledNotificationsUseCaseImpl(
-    val scheduledNotificationDbPort: ScheduledNotificationDbPort,
-    val notificationPreferencesDbPort: NotificationPreferencesDbPort,
-    val motivationalMessagesService: MotivationalMessagesService,
+  val scheduledNotificationDbPort: ScheduledNotificationDbPort,
+  val notificationPreferencesDbPort: NotificationPreferencesDbPort,
+  val motivationalMessagesService: MotivationalMessagesService,
 ) : CreateScheduledNotificationsUseCase {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+  private val log = LoggerFactory.getLogger(javaClass)
 
   override fun createForAllUsers() {
     log.info("Creating scheduled notifications for all users")
@@ -88,7 +88,12 @@ class CreateScheduledNotificationsUseCaseImpl(
 
     val scheduledAtUtc = nextSlot.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
 
-    if (scheduledNotificationDbPort.existsByUserIdAndScheduledAtAndActiveStatuses(userId, scheduledAtUtc)) {
+    if (
+      scheduledNotificationDbPort.existsByUserIdAndScheduledAtAndActiveStatuses(
+        userId,
+        scheduledAtUtc,
+      )
+    ) {
       log.debug("Notification already exists for user={} at {}", userId, scheduledAtUtc)
       return false
     }

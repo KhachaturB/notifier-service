@@ -111,18 +111,22 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
       }
   }
 
-override fun existsByUserIdAndScheduledAtAndActiveStatuses(userId: UUID, scheduledAt: OffsetDateTime): Boolean {
-        return (dslContext
-                .selectCount()
-                .from(SCHEDULED_NOTIFICATIONS)
-                .where(DSL.field("user_id").eq(userId))
-                .and(DSL.field("scheduled_at").eq(scheduledAt))
-                .and(
-                    DSL.field("status").eq(NotificationStatus.PENDING.name)
-                        .or(DSL.field("status").eq(NotificationStatus.FAILED.name))
-                )
-                .fetchOne(0, Int::class.javaObjectType) ?: 0) > 0
-    }
+  override fun existsByUserIdAndScheduledAtAndActiveStatuses(
+    userId: UUID,
+    scheduledAt: OffsetDateTime,
+  ): Boolean {
+    return (dslContext
+      .selectCount()
+      .from(SCHEDULED_NOTIFICATIONS)
+      .where(DSL.field("user_id").eq(userId))
+      .and(DSL.field("scheduled_at").eq(scheduledAt))
+      .and(
+        DSL.field("status")
+          .eq(NotificationStatus.PENDING.name)
+          .or(DSL.field("status").eq(NotificationStatus.FAILED.name))
+      )
+      .fetchOne(0, Int::class.javaObjectType) ?: 0) > 0
+  }
 
   override fun findByUserId(userId: UUID): List<ScheduledNotification> {
     return dslContext

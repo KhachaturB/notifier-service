@@ -8,14 +8,14 @@ import ru.vachoo.notifier.application.services.MotivationalMessagesService
 
 @Component
 class GenerateMotivationalMessagesJob(
-    val motivationalMessagesService: MotivationalMessagesService
+  val motivationalMessagesService: MotivationalMessagesService
 ) : Job {
 
-    private val log = LoggerFactory.getLogger(javaClass)
+  private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun execute(context: JobExecutionContext) {
-        log.info("Starting motivational messages generation job")
-        motivationalMessagesService.generateMessages()
-        log.info("Motivational messages generation job completed")
-    }
+  override fun execute(context: JobExecutionContext) {
+    log.info("Starting motivational messages generation job")
+    motivationalMessagesService.generateMessages()
+    log.info("Motivational messages generation job completed")
+  }
 }

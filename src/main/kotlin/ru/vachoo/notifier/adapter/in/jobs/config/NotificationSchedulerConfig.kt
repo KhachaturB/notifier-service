@@ -15,25 +15,25 @@ import ru.vachoo.notifier.application.services.MotivationalMessagesService
 
 @Component
 class NotificationSchedulerConfig(
-    private val scheduler: Scheduler,
-    private val jobFactory: AutowiringSpringBeanJobFactory,
-    private val motivationalMessagesService: MotivationalMessagesService,
+  private val scheduler: Scheduler,
+  private val jobFactory: AutowiringSpringBeanJobFactory,
+  private val motivationalMessagesService: MotivationalMessagesService,
 ) {
 
   private val log = LoggerFactory.getLogger(javaClass)
 
-@EventListener(ApplicationReadyEvent::class)
-    fun scheduleJobs() {
-        scheduler.setJobFactory(jobFactory)
-        log.info("Scheduling notification jobs")
+  @EventListener(ApplicationReadyEvent::class)
+  fun scheduleJobs() {
+    scheduler.setJobFactory(jobFactory)
+    log.info("Scheduling notification jobs")
 
-        motivationalMessagesService.generateMessages()
+    motivationalMessagesService.generateMessages()
 
-        scheduleCreateNotificationsJob()
-        scheduleProcessNotificationsJob()
-        scheduleGenerateMotivationalMessagesJob()
-        log.info("Notification jobs scheduled")
-    }
+    scheduleCreateNotificationsJob()
+    scheduleProcessNotificationsJob()
+    scheduleGenerateMotivationalMessagesJob()
+    log.info("Notification jobs scheduled")
+  }
 
   private fun scheduleCreateNotificationsJob() {
     val job =
@@ -65,24 +65,24 @@ class NotificationSchedulerConfig(
         .withSchedule(CronScheduleBuilder.cronSchedule("0 */1 * * * ?"))
         .build()
 
-scheduler.scheduleJob(job, trigger)
-        log.info("Scheduled ProcessScheduledNotificationsJob")
-    }
+    scheduler.scheduleJob(job, trigger)
+    log.info("Scheduled ProcessScheduledNotificationsJob")
+  }
 
-    private fun scheduleGenerateMotivationalMessagesJob() {
-        val job =
-            JobBuilder.newJob(GenerateMotivationalMessagesJob::class.java)
-                .withIdentity("generate-motivational-messages-job")
-                .storeDurably()
-                .build()
+  private fun scheduleGenerateMotivationalMessagesJob() {
+    val job =
+      JobBuilder.newJob(GenerateMotivationalMessagesJob::class.java)
+        .withIdentity("generate-motivational-messages-job")
+        .storeDurably()
+        .build()
 
-        val trigger =
-            TriggerBuilder.newTrigger()
-                .withIdentity("generate-motivational-messages-trigger")
-                .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
-                .build()
+    val trigger =
+      TriggerBuilder.newTrigger()
+        .withIdentity("generate-motivational-messages-trigger")
+        .withSchedule(CronScheduleBuilder.cronSchedule("0 0 0 * * ?"))
+        .build()
 
-        scheduler.scheduleJob(job, trigger)
-        log.info("Scheduled GenerateMotivationalMessagesJob")
-    }
+    scheduler.scheduleJob(job, trigger)
+    log.info("Scheduled GenerateMotivationalMessagesJob")
+  }
 }
