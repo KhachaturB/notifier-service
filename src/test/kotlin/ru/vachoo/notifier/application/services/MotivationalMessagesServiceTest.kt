@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import ru.vachoo.notifier.application.commonports.out.LlmPort
 
@@ -32,6 +33,7 @@ class MotivationalMessagesServiceTest {
 
     val message = service.getRandomMessage()
     assertTrue(expectedMessages.contains(message))
+    verify(llmPort).generateMotivationalMessages(10)
   }
 
   @Test
@@ -56,16 +58,23 @@ class MotivationalMessagesServiceTest {
   }
 
   @Test
-  fun shouldNotClearMessages_WhenGenerationReturnsEmptyList() {
-    val initialMessages = listOf("Первое сообщение 🎯")
-    whenever(llmPort.generateMotivationalMessages(10))
-      .thenReturn(initialMessages)
-      .thenReturn(emptyList())
+  fun shouldUseDefaultMessages_WhenLlmReturnsEmptyList() {
+    whenever(llmPort.generateMotivationalMessages(10)).thenReturn(emptyList())
 
     service.generateMessages()
-    service.generateMessages()
+    val message = service.getRandomMessage()
+
+    assertTrue(message.isNotEmpty())
+    assertTrue(message.length <= 40)
+  }
+
+  @Test
+  fun shouldUseDefaultMessages_WhenLlmReturnsEmptyListAndCacheEmpty() {
+    whenever(llmPort.generateMotivationalMessages(10)).thenReturn(emptyList())
 
     val message = service.getRandomMessage()
-    assertEquals("Первое сообщение 🎯", message)
+
+    assertTrue(message.isNotEmpty())
+    assertTrue(message.length <= 40)
   }
 }

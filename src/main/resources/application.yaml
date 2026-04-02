@@ -23,3 +23,16 @@ nim:
   api:
     url: ${NIM_API_URL:}
     key: ${NIM_API_KEY:}
+
+spring:
+  ai:
+    openai:
+      base-url: ${NIM_API_URL:https://integrate.api.nvidia.com}
+      api-key: ${NIM_API_KEY:}
+      chat:
+        options:
+          model: meta/llama-3.1-8b-instruct
+          max-tokens: 500
+          temperature: 0.8
+      embedding:
+        enabled: false

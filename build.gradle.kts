@@ -31,12 +31,14 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencyManagement {
     applyMavenExclusions(false)
     imports {
         mavenBom(BOM_COORDINATES)
+        mavenBom("org.springframework.ai:spring-ai-bom:1.0.0-M4")
     }
 }
 
@@ -73,6 +75,9 @@ dependencies {
 
     // Utils
     implementation("org.modelmapper:modelmapper:$modelMapper")
+
+    // Spring AI
+    implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter")
 
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")

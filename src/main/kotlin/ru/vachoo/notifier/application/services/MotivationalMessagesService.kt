@@ -12,12 +12,26 @@ class MotivationalMessagesService(private val llmPort: LlmPort) {
 
   private val messages = CopyOnWriteArrayList<String>()
 
+  private val defaultMessages =
+    listOf(
+      "Не забудьте о целях! 🎯",
+      "Шаг к цели уже близко! 💪",
+      "Прогресс — это путь! 🚀",
+      "Время для целей! ⏰",
+      "Маленькие шаги! 🌟",
+      "Вы можете всё! 💫",
+      "Движение вперёд! 🌈",
+      "Цели ждут вас! 🎊",
+      "Успех близко! 🔥",
+      "Верьте в себя! 💖",
+    )
+
   fun getRandomMessage(): String {
     return if (messages.isNotEmpty()) {
       messages.random()
     } else {
       generateMessages()
-      if (messages.isNotEmpty()) messages.random() else "Время двигаться к целям! 🚀"
+      if (messages.isNotEmpty()) messages.random() else defaultMessages.random()
     }
   }
 
@@ -28,6 +42,10 @@ class MotivationalMessagesService(private val llmPort: LlmPort) {
       messages.clear()
       messages.addAll(generated)
       log.info("Generated {} motivational messages", messages.size)
+    } else {
+      log.warn("LLM returned empty, using default messages")
+      messages.clear()
+      messages.addAll(defaultMessages)
     }
   }
 }
