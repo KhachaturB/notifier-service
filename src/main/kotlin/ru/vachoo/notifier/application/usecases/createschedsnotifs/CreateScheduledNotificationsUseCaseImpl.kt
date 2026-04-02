@@ -10,6 +10,7 @@ import java.util.UUID
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import ru.vachoo.notifier.application.commonports.out.ScheduledNotificationDbPort
+import ru.vachoo.notifier.application.services.MotivationalMessagesService
 import ru.vachoo.notifier.application.usecases.createschedsnotifs.`in`.CreateScheduledNotificationsUseCase
 import ru.vachoo.notifier.application.usecases.createschedsnotifs.out.NotificationPreferencesDbPort
 import ru.vachoo.notifier.domain.entities.ScheduledNotification
@@ -17,20 +18,12 @@ import ru.vachoo.notifier.domain.enums.NotificationStatus
 
 @Component
 class CreateScheduledNotificationsUseCaseImpl(
-  val scheduledNotificationDbPort: ScheduledNotificationDbPort,
-  val notificationPreferencesDbPort: NotificationPreferencesDbPort,
+    val scheduledNotificationDbPort: ScheduledNotificationDbPort,
+    val notificationPreferencesDbPort: NotificationPreferencesDbPort,
+    val motivationalMessagesService: MotivationalMessagesService,
 ) : CreateScheduledNotificationsUseCase {
 
-  private val log = LoggerFactory.getLogger(javaClass)
-
-  private val messages =
-    listOf(
-      "Не забудьте о своих целях на сегодня! 🎯",
-      "Время сделать шаг к своей цели! 💪",
-      "Прогресс — это путь, а не пункт назначения! 🚀",
-      "Вы уже сегодня работали над своими целями? ⏰",
-      "Маленькие шаги ведут к большим результатам! 🌟",
-    )
+    private val log = LoggerFactory.getLogger(javaClass)
 
   override fun createForAllUsers() {
     log.info("Creating scheduled notifications for all users")
@@ -95,12 +88,12 @@ class CreateScheduledNotificationsUseCaseImpl(
 
     val scheduledAtUtc = nextSlot.withZoneSameInstant(ZoneOffset.UTC).toOffsetDateTime()
 
-    if (scheduledNotificationDbPort.existsByUserIdAndScheduledAt(userId, scheduledAtUtc)) {
+    if (scheduledNotificationDbPort.existsByUserIdAndScheduledAtAndActiveStatuses(userId, scheduledAtUtc)) {
       log.debug("Notification already exists for user={} at {}", userId, scheduledAtUtc)
       return false
     }
 
-    val message = messages.random()
+    val message = motivationalMessagesService.getRandomMessage()
     val notification =
       ScheduledNotification().apply {
         this.id = UUID.randomUUID()

@@ -111,7 +111,7 @@ class ScheduledNotificationDbService(val dslContext: DSLContext) : ScheduledNoti
       }
   }
 
-override fun existsByUserIdAndScheduledAt(userId: UUID, scheduledAt: OffsetDateTime): Boolean {
+override fun existsByUserIdAndScheduledAtAndActiveStatuses(userId: UUID, scheduledAt: OffsetDateTime): Boolean {
         return (dslContext
                 .selectCount()
                 .from(SCHEDULED_NOTIFICATIONS)

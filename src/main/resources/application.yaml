@@ -18,3 +18,8 @@ spring:
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
+
+nim:
+  api:
+    url: ${NIM_API_URL:}
+    key: ${NIM_API_KEY:}
