@@ -62,6 +62,7 @@ jobs:
           SERVER_LOGIN: ${{ secrets.SERVER_LOGIN }}
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
+          NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
         run: |
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
@@ -74,6 +75,10 @@ jobs:
           sshpass -p "$SERVER_PASS" scp -P $SERVER_PORT -o StrictHostKeyChecking=no build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
           echo "JAR file deployed"
 
+          echo "Setting NIM_API_KEY environment variable..."
+          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S bash -c 'echo NIM_API_KEY=$NIM_API_KEY > /etc/notifier-env'"
+          echo "NIM_API_KEY set"
+
           echo "Starting application..."
-          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
+          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier-service"
           echo "Application started"
