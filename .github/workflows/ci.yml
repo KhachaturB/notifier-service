@@ -65,6 +65,7 @@ jobs:
         run: |
           echo "SERVER_LOGIN: $SERVER_LOGIN"
           echo "SERVER_HOST: $SERVER_HOST"
+          echo "SERVER_PASS: ${SERVER_PASS:0:2}...${SERVER_PASS: -2}"
           
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
