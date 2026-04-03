@@ -45,7 +45,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: Prod
       url: https://86.48.2.136
 
     steps:
