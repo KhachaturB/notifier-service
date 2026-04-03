@@ -22,27 +22,21 @@ class NimLlmAdapter(private val chatClientBuilder: ChatClient.Builder) : LlmPort
                     - Позитивные и вдохновляющие
                     - С эмодзи
                     - Для приложения достижения целей
-
-                    Верни только список сообщений, каждое с новой строки, без нумерации.
                     """
           .trimIndent()
 
-      val response = chatClientBuilder.build().prompt(prompt).call().content()
+      val response =
+        chatClientBuilder.build().prompt().user(prompt).call().entity(MessagesResponse::class.java)
 
-      parseMessages(response, count)
+      val messages = response?.messages?.filter { it.length <= 40 } ?: emptyList()
+
+      log.info("Generated {} messages from LLM", messages.size)
+      messages
     } catch (e: Exception) {
       log.error("Failed to generate messages: {}", e.message)
       emptyList()
     }
   }
 
-  private fun parseMessages(response: String?, count: Int): List<String> {
-    if (response.isNullOrBlank()) return emptyList()
-
-    val messages =
-      response.lines().map { it.trim() }.filter { it.isNotBlank() && it.length <= 40 }.take(count)
-
-    log.info("Parsed {} messages from LLM response", messages.size)
-    return messages
-  }
+  data class MessagesResponse(val messages: List<String>)
 }

@@ -30,22 +30,15 @@ class MotivationalMessagesService(private val llmPort: LlmPort) {
     return if (messages.isNotEmpty()) {
       messages.random()
     } else {
-      generateMessages()
-      if (messages.isNotEmpty()) messages.random() else defaultMessages.random()
+      defaultMessages.random()
     }
   }
 
   fun generateMessages() {
     log.info("Generating motivational messages")
     val generated = llmPort.generateMotivationalMessages(10)
-    if (generated.isNotEmpty()) {
-      messages.clear()
-      messages.addAll(generated)
-      log.info("Generated {} motivational messages", messages.size)
-    } else {
-      log.warn("LLM returned empty, using default messages")
-      messages.clear()
-      messages.addAll(defaultMessages)
-    }
+    messages.clear()
+    messages.addAll(generated)
+    log.info("Generated {} motivational messages", messages.size)
   }
 }

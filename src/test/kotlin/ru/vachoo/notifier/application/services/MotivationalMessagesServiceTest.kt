@@ -48,33 +48,25 @@ class MotivationalMessagesServiceTest {
   }
 
   @Test
-  fun shouldGenerateMessages_WhenGetRandomMessageCalledWithEmptyCache() {
-    val expectedMessages = listOf("Новое сообщение 🌟")
-    whenever(llmPort.generateMotivationalMessages(10)).thenReturn(expectedMessages)
-
+  fun shouldReturnDefaultMessage_WhenNoMessagesGenerated() {
     val message = service.getRandomMessage()
 
-    assertEquals("Новое сообщение 🌟", message)
+    assertTrue(message.isNotEmpty())
+    assertTrue(message.length <= 40)
   }
 
   @Test
-  fun shouldUseDefaultMessages_WhenLlmReturnsEmptyList() {
-    whenever(llmPort.generateMotivationalMessages(10)).thenReturn(emptyList())
+  fun shouldClearMessages_WhenGenerateCalled() {
+    val firstBatch = listOf("Первое сообщение 🎯")
+    val secondBatch = listOf("Второе сообщение 💪")
+    whenever(llmPort.generateMotivationalMessages(10))
+      .thenReturn(firstBatch)
+      .thenReturn(secondBatch)
 
     service.generateMessages()
-    val message = service.getRandomMessage()
+    assertEquals("Первое сообщение 🎯", service.getRandomMessage())
 
-    assertTrue(message.isNotEmpty())
-    assertTrue(message.length <= 40)
-  }
-
-  @Test
-  fun shouldUseDefaultMessages_WhenLlmReturnsEmptyListAndCacheEmpty() {
-    whenever(llmPort.generateMotivationalMessages(10)).thenReturn(emptyList())
-
-    val message = service.getRandomMessage()
-
-    assertTrue(message.isNotEmpty())
-    assertTrue(message.length <= 40)
+    service.generateMessages()
+    assertEquals("Второе сообщение 💪", service.getRandomMessage())
   }
 }

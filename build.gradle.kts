@@ -1,7 +1,10 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.codegen.GenerationTool
-import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Target
 import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 
@@ -31,14 +34,13 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencyManagement {
     applyMavenExclusions(false)
     imports {
         mavenBom(BOM_COORDINATES)
-        mavenBom("org.springframework.ai:spring-ai-bom:1.0.0-M4")
+        mavenBom("org.springframework.ai:spring-ai-bom:1.1.4")
     }
 }
 
@@ -63,21 +65,19 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-quartz")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$swagger")
+    implementation("org.springframework.ai:spring-ai-starter-model-openai")
 
     // Database
     implementation("org.liquibase:liquibase-core:$liquibase")
     implementation("org.postgresql:postgresql:$postgres")
     implementation("org.jooq:jooq:$jooq")
-//    implementation("org.jooq:jooq-jackson-extensions:$jooq")
+    // implementation("org.jooq:jooq-jackson-extensions:$jooq")
 
     // Utils
     implementation("org.modelmapper:modelmapper:$modelMapper")
-
-    // Spring AI
-    implementation("org.springframework.ai:spring-ai-openai-spring-boot-starter")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$swagger")
 
     // Tests
     testImplementation("org.springframework.boot:spring-boot-starter-test")
