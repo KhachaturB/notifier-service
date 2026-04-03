@@ -63,21 +63,17 @@ jobs:
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
         run: |
-          echo "SERVER_LOGIN: $SERVER_LOGIN"
-          echo "SERVER_HOST: $SERVER_HOST"
-          echo "SERVER_PASS: ${SERVER_PASS:0:2}...${SERVER_PASS: -2}"
-          
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
 
-          # Stop existing application
+          echo "Stopping existing application..."
           sshpass -p "$SERVER_PASS" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true"
           echo "Application stopped"
 
-          # Deploy new jar file
+          echo "Deploying JAR file..."
           sshpass -p "$SERVER_PASS" scp -p $SERVER_PORT -o StrictHostKeyChecking=no build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
           echo "JAR file deployed"
 
-          # Start application
+          echo "Starting application..."
           sshpass -p "$SERVER_PASS" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
           echo "Application started"
