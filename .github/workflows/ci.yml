@@ -44,6 +44,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://86.48.2.136
 
     steps:
       - name: Download build artifact
@@ -56,7 +59,7 @@ jobs:
         env:
           SERVER_HOST: 86.48.2.136
           SERVER_PORT: 22
-          SERVER_LOGIN: ${{ secrets.SERVER_LOGIN }}
+          SERVER_LOGIN: ${{ vars.SERVER_LOGIN }}
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
         run: |
