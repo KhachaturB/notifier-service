@@ -61,7 +61,7 @@ jobs:
           DEPLOY_DIR: /app
         run: |
           # Install sshpass if not present
-          apt-get update && apt-get install -y sshpass
+          sudo apt-get update && sudo apt-get install -y sshpass
 
           # Stop existing application
           sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true"
