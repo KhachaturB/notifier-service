@@ -59,7 +59,7 @@ jobs:
         env:
           SERVER_HOST: 86.48.2.136
           SERVER_PORT: 22
-          SERVER_LOGIN: ${{ vars.SERVER_LOGIN }}
+          SERVER_LOGIN: ${{ secrets.SERVER_LOGIN }}
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
         run: |
