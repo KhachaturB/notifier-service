@@ -60,6 +60,9 @@ jobs:
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
         run: |
+          echo "SERVER_LOGIN: $SERVER_LOGIN"
+          echo "SERVER_HOST: $SERVER_HOST"
+          
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
 
