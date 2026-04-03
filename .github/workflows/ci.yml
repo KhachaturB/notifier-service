@@ -64,10 +64,10 @@ jobs:
           apt-get update && apt-get install -y sshpass
 
           # Stop existing application
-          sshpass -p "$SERVER_PASS" -C ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true"
+          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true"
 
           # Deploy new jar file
-          sshpass -p "$SERVER_PASS" -C scp -o StrictHostKeyChecking=no -P $SERVER_PORT build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
+          sshpass -p "$SERVER_PASS" scp -o StrictHostKeyChecking=no -P $SERVER_PORT build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
 
           # Start application
-          sshpass -p "$SERVER_PASS" -C ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
+          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no -p $SERVER_PORT $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
