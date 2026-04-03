@@ -67,13 +67,13 @@ jobs:
           sudo apt-get update && sudo apt-get install -y sshpass
 
           echo "Stopping existing application..."
-          sshpass -p "$SERVER_PASS" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true" || true
+          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true" || true
           echo "Application stopped"
 
           echo "Deploying JAR file..."
-          sshpass -p "$SERVER_PASS" scp -p $SERVER_PORT -o StrictHostKeyChecking=no build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
+          sshpass -p "$SERVER_PASS" scp -P $SERVER_PORT -o StrictHostKeyChecking=no build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
           echo "JAR file deployed"
 
           echo "Starting application..."
-          sshpass -p "$SERVER_PASS" ssh -p $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
+          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "cd $DEPLOY_DIR && nohup java -jar *.jar > app.log 2>&1 &"
           echo "Application started"
