@@ -107,6 +107,10 @@ jobs:
           sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier.service"
           echo "Application started"
 
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Create git tag
         run: |
           git tag "v${{ env.VERSION }}"
