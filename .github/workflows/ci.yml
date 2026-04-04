@@ -4,9 +4,9 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers on push to main branch
+  # Triggers on push to any branch
   push:
-    branches: [ "main" ]
+    branches: [ "**" ]
   # Triggers on pull request to main
   pull_request:
     branches: [ "main" ]
