@@ -164,7 +164,7 @@ jib {
     }
     to {
         image = "ghcr.io/khachaturb/notifier-service"
-        tags = listOf(version.toString(), "latest")
+        tags = setOf(version.toString(), "latest")
     }
     container {
         mainClass = "ru.vachoo.notifier.NotifierService"
