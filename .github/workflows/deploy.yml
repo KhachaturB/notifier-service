@@ -1,11 +1,9 @@
-# CI workflow - build and deploy
+# Deploy workflow - runs only on main branch push
 
-name: CI
+name: Deploy
 
 on:
   push:
-    branches: [ "main", "**" ]
-  pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
@@ -13,36 +11,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Build and test
-        run: |
-          ./gradlew build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: build/libs/*.jar
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && github.event_name != 'pull_request'
     permissions:
       contents: write
 
@@ -57,8 +27,23 @@ jobs:
           prefix: 'v'
         id: version
 
-      - name: Output version
-        run: echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build and test
+        env:
+          APP_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          ./gradlew build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: build/libs/*.jar
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
