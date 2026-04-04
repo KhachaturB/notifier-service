@@ -73,7 +73,6 @@ jobs:
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
-          APP_VERSION: ${{ needs.build.outputs.VERSION }}
         run: |
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass

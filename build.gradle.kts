@@ -19,7 +19,8 @@ plugins {
 }
 
 group = "ru.vachoo"
-version = "0.0.1-SNAPSHOT"
+val appVersion: String? = System.getenv("APP_VERSION")
+version = appVersion ?: "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
