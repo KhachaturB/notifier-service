@@ -1,12 +1,10 @@
-# Build job - runs on all branches
+# Build workflow - runs on all branches except main
 
 name: Build
 
 on:
   push:
-    branches: [ "**" ]
-  pull_request:
-    branches: [ "main" ]
+    branches-ignore: [ "main" ]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -14,10 +12,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      version: ${{ steps.version.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -33,9 +27,3 @@ jobs:
       - name: Build and test
         run: |
           ./gradlew build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-${{ github.sha }}
-          path: build/libs/*.jar
