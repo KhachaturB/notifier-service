@@ -50,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
     environment:
       name: Prod
       url: https://notifier.vachoo.ru
@@ -64,6 +65,18 @@ jobs:
         with:
           name: app
           path: build/libs/
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build Docker image
+        env:
+          APP_VERSION: ${{ needs.build.outputs.VERSION }}
+        run: |
+          ./gradlew jib --image=ghcr.io/khachaturb/notifier-service:$APP_VERSION
 
       - name: Deploy to server
         env:

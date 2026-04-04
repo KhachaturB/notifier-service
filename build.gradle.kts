@@ -15,6 +15,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.23"
     id("org.jooq.jooq-codegen-gradle") version "3.20.11"
     id("com.diffplug.spotless") version "8.2.1"
+    id("com.google.cloud.tools.jib") version "3.4.4"
     id("jacoco")
 }
 
@@ -154,5 +155,25 @@ tasks.register("jooq-codegen") {
                     )
             )
         GenerationTool.generate(configuration)
+    }
+}
+
+jib {
+    from {
+        image = "eclipse-temurin:21-jre-alpine"
+    }
+    to {
+        image = "ghcr.io/khachaturb/notifier-service"
+        tags = listOf(version.toString(), "latest")
+    }
+    container {
+        mainClass = "ru.vachoo.notifier.NotifierServiceKt"
+        ports = listOf("8080")
+        environment = mapOf(
+            "SPRING_DATASOURCE_URL" to "\${SPRING_DATASOURCE_URL}",
+            "SPRING_DATASOURCE_USERNAME" to "\${SPRING_DATASOURCE_USERNAME}",
+            "SPRING_DATASOURCE_PASSWORD" to "\${SPRING_DATASOURCE_PASSWORD}",
+            "NIM_API_KEY" to "\${NIM_API_KEY}"
+        )
     }
 }
