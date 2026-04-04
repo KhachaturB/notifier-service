@@ -35,7 +35,7 @@ jobs:
 
       - name: Build and test
         env:
-          APP_VERSION: ${{ needs.build.outputs.VERSION }}
+          APP_VERSION: ${{ steps.version.outputs.version }}
         run: |
           ./gradlew build
 
@@ -71,40 +71,6 @@ jobs:
           DEPLOY_DIR: /app
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
           APP_VERSION: ${{ needs.build.outputs.VERSION }}
-        run: |
-          ./gradlew build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: build/libs/*.jar
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app
-          path: build/libs/
-
-      - name: Deploy to server
-        env:
-          SERVER_HOST: 86.48.2.136
-          SERVER_PORT: 22
-          SERVER_LOGIN: ${{ secrets.SERVER_LOGIN }}
-          SERVER_PASS: ${{ secrets.SERVER_PASS }}
-          DEPLOY_DIR: /app
-          NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
         run: |
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
