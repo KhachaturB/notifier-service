@@ -22,26 +22,19 @@ jobs:
     permissions:
       contents: write
     outputs:
-      VERSION: ${{ steps.version.outputs.VERSION }}
+      VERSION: ${{ steps.version.outputs.version }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      - name: Get latest tag
-        id: get_tag
-        run: |
-          git fetch --tags
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "LATEST_TAG=$LATEST_TAG"
-
-      - name: Bump version
-        uses: cbrgm/semver-bump-action@v1.0.0
         with:
-          current-version: ${{ steps.get_tag.outputs.LATEST_TAG }}
-          bump-level: patch
+          fetch-depth: 0
+
+      - name: Calculate semantic version
+        uses: PaulHatch/semantic-version@v5.2.0
+        with:
+          prefix: 'v'
         id: version
 
       - name: Set up JDK 21
@@ -52,7 +45,7 @@ jobs:
 
       - name: Build and test
         env:
-          APP_VERSION: ${{ steps.version.outputs.VERSION }}
+          APP_VERSION: ${{ steps.version.outputs.version }}
         run: |
           ./gradlew build
 
@@ -63,7 +56,7 @@ jobs:
           path: build/libs/*.jar
 
       - name: Output version for deploy job
-        run: echo "VERSION=${{ steps.version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+        run: echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
 
   deploy:
     needs: build
