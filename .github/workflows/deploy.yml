@@ -1,32 +1,28 @@
-# This is a basic workflow to help you get started with Actions
+# Deploy job - runs only on main branch push
 
-name: CI
+name: Deploy
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  workflow_run:
+    workflows: [ "Build" ]
+    types: [completed]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     outputs:
       VERSION: ${{ steps.version.outputs.version }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,44 +33,13 @@ jobs:
           prefix: 'v'
         id: version
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Build and test
-        env:
-          APP_VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          ./gradlew build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: build/libs/*.jar
-
-      - name: Output version for deploy job
+      - name: Output version
         run: echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: Prod
-      url: https://86.48.2.136
-    permissions:
-      contents: write
-
-    steps:
-      - name: Get VERSION from build job
-        run: echo "VERSION=${{ needs.build.outputs.VERSION }}" >> $GITHUB_ENV
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: app
+          name: app-${{ github.sha }}
           path: build/libs/
 
       - name: Deploy to server
@@ -85,7 +50,7 @@ jobs:
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
-          APP_VERSION: ${{ env.VERSION }}
+          APP_VERSION: ${{ steps.version.outputs.version }}
         run: |
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
@@ -107,21 +72,17 @@ jobs:
           sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier.service"
           echo "Application started"
 
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Create git tag
         run: |
-          git tag "v${{ env.VERSION }}"
-          git push origin "v${{ env.VERSION }}"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Create GitHub release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: Release v${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
