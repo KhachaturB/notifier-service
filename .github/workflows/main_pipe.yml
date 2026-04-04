@@ -50,6 +50,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    environment:
+      name: Prod
+      url: https://notifier.vachoo.ru
 
     steps:
       - uses: actions/checkout@v4
