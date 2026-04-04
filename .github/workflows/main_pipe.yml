@@ -1,6 +1,6 @@
-# Deploy workflow - runs only on main branch push
+# Main pipeline - runs on main branch push
 
-name: Deploy
+name: Main Pipeline
 
 on:
   push:
@@ -11,10 +11,10 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    outputs:
+      VERSION: ${{ steps.version.outputs.version }}
 
     steps:
       - uses: actions/checkout@v4
@@ -45,6 +45,17 @@ jobs:
           name: app
           path: build/libs/*.jar
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
@@ -59,7 +70,7 @@ jobs:
           SERVER_PASS: ${{ secrets.SERVER_PASS }}
           DEPLOY_DIR: /app
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
-          APP_VERSION: ${{ steps.version.outputs.version }}
+          APP_VERSION: ${{ needs.build.outputs.VERSION }}
         run: |
           # Install sshpass if not present
           sudo apt-get update && sudo apt-get install -y sshpass
@@ -74,7 +85,6 @@ jobs:
 
           echo "Setting environment variables..."
           sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S bash -c 'echo NIM_API_KEY=$NIM_API_KEY > /etc/notifier/notifier-env'"
-          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S bash -c 'echo APP_VERSION=$APP_VERSION >> /etc/notifier/notifier-env'"
           echo "Environment variables set"
 
           echo "Starting application..."
@@ -83,15 +93,15 @@ jobs:
 
       - name: Create git tag
         run: |
-          git tag "v${{ steps.version.outputs.version }}"
-          git push origin "v${{ steps.version.outputs.version }}"
+          git tag "v${{ needs.build.outputs.VERSION }}"
+          git push origin "v${{ needs.build.outputs.VERSION }}"
 
       - name: Create GitHub release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.version.outputs.version }}
-          release_name: Release v${{ steps.version.outputs.version }}
+          tag_name: v${{ needs.build.outputs.VERSION }}
+          release_name: Release v${{ needs.build.outputs.VERSION }}
           draft: false
           prerelease: false
