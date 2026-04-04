@@ -167,7 +167,7 @@ jib {
         tags = listOf(version.toString(), "latest")
     }
     container {
-        mainClass = "ru.vachoo.notifier.NotifierServiceKt"
+        mainClass = "ru.vachoo.notifier.NotifierService"
         ports = listOf("8080")
         environment = mapOf(
             "SPRING_DATASOURCE_URL" to "\${SPRING_DATASOURCE_URL}",
