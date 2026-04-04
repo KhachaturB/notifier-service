@@ -4,29 +4,55 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Triggers on push to main branch
   push:
     branches: [ "main" ]
+  # Triggers on pull request to main
   pull_request:
     branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # Allows running workflow manually
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  # Build job - runs on all branches
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build and test
+        run: |
+          ./gradlew build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: build/libs/*.jar
+
+  # Full CI job - runs only on main branch push
+  full-ci:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: write
     outputs:
       VERSION: ${{ steps.version.outputs.version }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,37 +63,9 @@ jobs:
           prefix: 'v'
         id: version
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
-      - name: Build and test
-        env:
-          APP_VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          ./gradlew build
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: build/libs/*.jar
-
-      - name: Output version for deploy job
+      - name: Output version
         run: echo "VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_OUTPUT
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: Prod
-      url: https://86.48.2.136
-    permissions:
-      contents: write
-
-    steps:
       - name: Get VERSION from build job
         run: echo "VERSION=${{ needs.build.outputs.VERSION }}" >> $GITHUB_ENV
 
@@ -106,10 +104,6 @@ jobs:
           echo "Starting application..."
           sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier.service"
           echo "Application started"
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Create git tag
         run: |
