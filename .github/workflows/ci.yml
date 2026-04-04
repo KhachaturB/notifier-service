@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      VERSION: ${{ steps.version.outputs.VERSION }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -52,8 +54,8 @@ jobs:
           name: app
           path: build/libs/*.jar
 
-      - name: Output version
-        run: echo "VERSION=${{ steps.version.outputs.VERSION }}"
+      - name: Output version for deploy job
+        run: echo "VERSION=${{ steps.version.outputs.VERSION }}" >> $GITHUB_OUTPUT
 
   deploy:
     needs: build
@@ -61,11 +63,12 @@ jobs:
     environment:
       name: Prod
       url: https://86.48.2.136
+    permissions:
+      contents: write
 
     steps:
-      - name: Get VERSION from build
-        run: |
-          echo "VERSION=$(git rev-list --count HEAD)" >> $GITHUB_ENV
+      - name: Get VERSION from build job
+        run: echo "VERSION=${{ needs.build.outputs.VERSION }}" >> $GITHUB_ENV
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
