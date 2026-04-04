@@ -106,9 +106,7 @@ jobs:
           sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier.service"
           echo "Application started"
 
-      - name: Create tag and release
-        uses: metcalfc/create-tag-release@v1
-        with:
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create git tag
+        run: |
+          git tag "v${{ env.VERSION }}"
+          git push origin "v${{ env.VERSION }}"
