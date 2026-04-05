@@ -26,6 +26,11 @@ spec:
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-Xmx700m"
+            - name: APP_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  name: notifier-config
+                  key: app-version
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:
