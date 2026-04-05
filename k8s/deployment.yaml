@@ -16,7 +16,7 @@ spec:
         app: notifier-service
     spec:
       imagePullSecrets:
-        - name: ghcr-secret
+        - name: image-pull-secret
       containers:
         - name: notifier-service
           image: ghcr.io/khachaturb/notifier-service:latest

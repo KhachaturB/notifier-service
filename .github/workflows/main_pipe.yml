@@ -90,9 +90,13 @@ jobs:
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
+      - name: Create namespace
+        run: |
+          kubectl apply -f k8s/namespace.yaml
+
       - name: Create image pull secret
         run: |
-          kubectl create secret docker-registry ghcr-secret \
+          kubectl create secret docker-registry image-pull-secret \
             --docker-server=ghcr.io \
             --docker-username=${{ github.actor }} \
             --docker-password=${{ secrets.IMAGE_PULL_SECRET }} \
