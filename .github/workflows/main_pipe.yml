@@ -45,15 +45,12 @@ jobs:
           name: app
           path: build/libs/*.jar
 
-  deploy:
+  publish:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
-    environment:
-      name: Prod
-      url: https://notifier.vachoo.ru
 
     steps:
       - uses: actions/checkout@v4
@@ -85,6 +82,21 @@ jobs:
         run: |
           ./gradlew jib --image=ghcr.io/khachaturb/notifier-service:$APP_VERSION
 
+  deploy:
+    needs: [build, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    environment:
+      name: Prod
+      url: https://notifier.vachoo.ru
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Set up kubectl
         uses: azure/k8s-set-context@v4
         with:
@@ -106,18 +118,23 @@ jobs:
       - name: Deploy to Kubernetes
         env:
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
         run: |
-          # Create secret for NIM_API_KEY
           kubectl create secret generic notifier-secrets \
             --namespace=app \
             --from-literal=nim-api-key=$NIM_API_KEY \
+            --from-literal=db-user=$DB_USER \
+            --from-literal=db-pass=$DB_PASS \
             --dry-run=client -o yaml | kubectl apply -f -
-          
-          # Apply k8s manifests
+
           kubectl apply -f k8s/ --namespace=app
-          
-          # Patch the NIM_API_KEY env var in deployment
-          kubectl set env deployment/notifier-service NIM_API_KEY=$NIM_API_KEY --namespace=app
+
+          kubectl set env deployment/notifier-service \
+            NIM_API_KEY=$NIM_API_KEY \
+            SPRING_DATASOURCE_USERNAME=$DB_USER \
+            SPRING_DATASOURCE_PASSWORD=$DB_PASS \
+            --namespace=app
 
       - name: Wait for deployment
         run: |
