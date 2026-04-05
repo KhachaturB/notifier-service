@@ -92,7 +92,7 @@ jobs:
       packages: read
     environment:
       name: Prod
-      url: https://notifier.vachoo.ru
+      url: https://notifier-service.vachoo.uk
 
     steps:
       - uses: actions/checkout@v4
