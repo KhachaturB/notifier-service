@@ -92,7 +92,7 @@ jobs:
       packages: read
     environment:
       name: Prod
-      url: https://notifier-service.vachoo.uk
+      url: https://notifier-service.vachoo.uk/swagger-ui/index.html
 
     steps:
       - uses: actions/checkout@v4
