@@ -25,7 +25,7 @@ spec:
               name: http
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://127.0.0.1:5432/postgres?currentSchema=notifier_service&options=-c%20timezone=UTC"
+              value: "jdbc:postgresql://localhost:5432/postgres?currentSchema=notifier_service&options=-c%20timezone=UTC"
             - name: SPRING_DATASOURCE_USERNAME
               value: "secret"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -51,16 +51,3 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 5
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: notifier-service
-  namespace: app
-spec:
-  selector:
-    app: notifier-service
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080

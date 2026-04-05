@@ -24,7 +24,7 @@ jobs:
       - name: Calculate semantic version
         uses: PaulHatch/semantic-version@v5.2.0
         with:
-          prefix: 'v'
+          tag_prefix: 'v'
         id: version
 
       - name: Set up JDK 21
