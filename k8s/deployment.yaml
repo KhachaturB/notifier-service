@@ -25,13 +25,22 @@ spec:
               name: http
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://localhost:5432/notifier_app_prod?currentSchema=notifier_service&options=-c%20timezone=UTC"
+              value: "jdbc:postgresql://127.0.0.1:5432/notifier_app_prod?currentSchema=notifier_service&options=-c%20timezone=UTC"
             - name: SPRING_DATASOURCE_USERNAME
-              value: "REPLACED_BY_CI"
+              valueFrom:
+                secretKeyRef:
+                  name: notifier-secrets
+                  key: db-user
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "REPLACED_BY_CI"
+              valueFrom:
+                secretKeyRef:
+                  name: notifier-secrets
+                  key: db-pass
             - name: NIM_API_KEY
-              value: "REPLACED_BY_CI"
+              valueFrom:
+                secretKeyRef:
+                  name: notifier-secrets
+                  key: nim-api-key
           resources:
             requests:
               memory: "512Mi"

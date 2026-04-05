@@ -130,12 +130,6 @@ jobs:
 
           kubectl apply -f k8s/ --namespace=app
 
-          kubectl set env deployment/notifier-service \
-            NIM_API_KEY=$NIM_API_KEY \
-            SPRING_DATASOURCE_USERNAME=$DB_USER \
-            SPRING_DATASOURCE_PASSWORD=$DB_PASS \
-            --namespace=app
-
       - name: Wait for deployment
         run: |
           kubectl rollout status deployment/notifier-service --namespace=app --timeout=300s
