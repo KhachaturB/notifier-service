@@ -85,33 +85,39 @@ jobs:
         run: |
           ./gradlew jib --image=ghcr.io/khachaturb/notifier-service:$APP_VERSION
 
-      - name: Deploy to server
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v4
+        with:
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Create image pull secret
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.IMAGE_PULL_SECRET }} \
+            --namespace=app \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to Kubernetes
         env:
-          SERVER_HOST: 86.48.2.136
-          SERVER_PORT: 22
-          SERVER_LOGIN: ${{ secrets.SERVER_LOGIN }}
-          SERVER_PASS: ${{ secrets.SERVER_PASS }}
-          DEPLOY_DIR: /app
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
         run: |
-          # Install sshpass if not present
-          sudo apt-get update && sudo apt-get install -y sshpass
+          # Create secret for NIM_API_KEY
+          kubectl create secret generic notifier-secrets \
+            --namespace=app \
+            --from-literal=nim-api-key=$NIM_API_KEY \
+            --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Apply k8s manifests
+          kubectl apply -f k8s/ --namespace=app
+          
+          # Patch the NIM_API_KEY env var in deployment
+          kubectl set env deployment/notifier-service NIM_API_KEY=$NIM_API_KEY --namespace=app
 
-          echo "Stopping existing application..."
-          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "pkill -f 'java.*notifier-service' || true" || true
-          echo "Application stopped"
-
-          echo "Deploying JAR file..."
-          sshpass -p "$SERVER_PASS" scp -P $SERVER_PORT -o StrictHostKeyChecking=no build/libs/*.jar $SERVER_LOGIN@$SERVER_HOST:$DEPLOY_DIR/
-          echo "JAR file deployed"
-
-          echo "Setting environment variables..."
-          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S bash -c 'echo NIM_API_KEY=$NIM_API_KEY > /etc/notifier/notifier-env'"
-          echo "Environment variables set"
-
-          echo "Starting application..."
-          sshpass -p "$SERVER_PASS" ssh -P $SERVER_PORT -o StrictHostKeyChecking=no $SERVER_LOGIN@$SERVER_HOST "echo '$SERVER_PASS' | sudo -S systemctl start notifier.service"
-          echo "Application started"
+      - name: Wait for deployment
+        run: |
+          kubectl rollout status deployment/notifier-service --namespace=app --timeout=300s
 
       - name: Create git tag
         run: |

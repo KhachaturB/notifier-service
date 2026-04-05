@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: notifier-service
+  namespace: app
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: public
+  tls:
+    - hosts:
+        - notifier-service.vachoo.uk
+      secretName: notifier-tls
+  rules:
+    - host: notifier-service.vachoo.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: notifier-service
+                port:
+                  number: 8080
