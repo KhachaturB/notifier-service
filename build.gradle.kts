@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "ru.vachoo"
-val appVersion: String? = System.getenv("APP_VERSION") ?: project.property("app.version") as? String
+val appVersion: String? = System.getenv("APP_VERSION") ?: project.findProperty("app.version") as? String
 version = appVersion ?: "0.0.1-SNAPSHOT"
 
 java {
