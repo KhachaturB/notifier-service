@@ -120,12 +120,18 @@ jobs:
           NIM_API_KEY: ${{ secrets.NIM_API_KEY }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
+          DB_HOST: ${{ secrets.DB_HOST }}
         run: |
           kubectl create secret generic notifier-secrets \
             --namespace=app \
             --from-literal=nim-api-key=$NIM_API_KEY \
             --from-literal=db-user=$DB_USER \
             --from-literal=db-pass=$DB_PASS \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl create configmap notifier-config \
+            --namespace=app \
+            --from-literal=datasource-url="jdbc:postgresql://${DB_HOST}:5432/notifier_app_prod?currentSchema=notifier_service&options=-c%20timezone=UTC" \
             --dry-run=client -o yaml | kubectl apply -f -
 
           kubectl apply -f k8s/ --namespace=app

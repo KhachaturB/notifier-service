@@ -25,7 +25,10 @@ spec:
               name: http
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://127.0.0.1:5432/notifier_app_prod?currentSchema=notifier_service&options=-c%20timezone=UTC"
+              valueFrom:
+                configMapKeyRef:
+                  name: notifier-config
+                  key: datasource-url
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
