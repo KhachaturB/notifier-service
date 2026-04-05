@@ -24,6 +24,8 @@ spec:
             - containerPort: 8080
               name: http
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx700m"
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 configMapKeyRef:
